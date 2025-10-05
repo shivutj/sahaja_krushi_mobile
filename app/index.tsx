@@ -529,14 +529,14 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     letterSpacing: 0.2,
   },
   inputContainer: {
-    marginBottom: height * 0.02,
+    marginBottom: Math.max(14, height * 0.02),
   },
   inputLabel: {
     fontSize: isSmallScreen ? 12 : 14,
     color: '#333',
     fontWeight: '700',
-    marginBottom: 6,
-    marginLeft: 4,
+    marginBottom: 10,
+    marginLeft: 6,
   },
   input: {
     backgroundColor: '#fff',
