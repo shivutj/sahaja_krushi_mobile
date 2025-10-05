@@ -305,18 +305,13 @@ export default function HomeScreen() {
               onPress={() => router.push(item.route)}
               activeOpacity={0.8}
             >
-              <LinearGradient 
-                colors={item.gradient} 
-                start={{x: 0, y: 0}} 
-                end={{x: 1, y: 1}}
-                style={styles.menuCardContent}
-              >
-                <View style={[styles.menuIconContainer, { backgroundColor: item.iconBg }]}>
-                  <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="white" />
+              <View style={styles.menuCardContentPlain}>
+                <View style={styles.menuIconContainerPlain}>
+                  <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="#111" />
                 </View>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </LinearGradient>
+                <Text style={styles.menuTitlePlain}>{item.title}</Text>
+                <Text style={styles.menuSubtitlePlain}>{item.subtitle}</Text>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
@@ -510,45 +505,41 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     justifyContent: 'space-between',
   },
   menuCard: {
-    borderRadius: 16,
+    borderRadius: 14,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.08)',
+    backgroundColor: '#FFFFFF',
   },
-  menuCardContent: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+  menuCardContentPlain: {
+    paddingVertical: 14,
+    paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 64,
+    minHeight: 72,
   },
-  menuIconContainer: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+  menuIconContainerPlain: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.2)',
+    marginBottom: 10,
+    backgroundColor: '#F3F4F6',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.06)'
   },
-  menuTitle: { 
-    color: 'white', 
+  menuTitlePlain: { 
+    color: '#111111', 
     fontWeight: '800', 
     textAlign: 'center',
     marginBottom: 4,
-    fontSize: 12,
+    fontSize: 13,
     letterSpacing: 0.2,
-    textShadowColor: 'rgba(0,0,0,0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
   },
-  menuSubtitle: {
-    color: 'rgba(255,255,255,0.9)',
-    fontSize: 9,
+  menuSubtitlePlain: {
+    color: '#444',
+    fontSize: 10,
     fontWeight: '600',
     textAlign: 'center',
   },
