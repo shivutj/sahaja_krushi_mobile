@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
-import { Text, TextInput, Button, Card, useTheme } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Card, Text, TextInput, useTheme } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { CROP_REPORTS_BASE, FARMERS_BASE } from './config/api';
 
 // Removed CROP_TYPES array as crop type field is no longer needed
@@ -105,8 +105,9 @@ export default function CreateCropReportScreen() {
 
       if (result.success) {
         const newId = String(result?.data?.id || '');
-        // Navigate directly to crop report detail after creation
-        router.replace({ pathname: '/crop-report-detail', params: { id: newId } });
+        // After successful creation, go back to list and ensure it refreshes
+        router.replace('/crop-reports');
+        // Optionally navigate to detail: router.push({ pathname: '/crop-report-detail', params: { id: newId } });
       } else {
         throw new Error(result.message || 'Failed to create crop report');
       }

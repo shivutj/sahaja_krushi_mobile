@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
-import { Text, Card, FAB, useTheme, ActivityIndicator } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FAB, Text, useTheme } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { CROP_REPORTS_BASE, FARMERS_BASE, getApiBaseUrl } from './config/api';
 
 interface CropReport {
@@ -102,6 +102,14 @@ export default function CropReportsScreen() {
   useEffect(() => {
     fetchCropReports();
   }, []);
+
+  // Refresh list whenever the screen gains focus (e.g., after creating a report)
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCropReports();
+      return undefined;
+    }, [])
+  );
 
   const getProgressPercentage = (stages: CropStage[]) => {
     if (!stages || stages.length === 0) return 0;
