@@ -216,7 +216,7 @@ export default function LoginScreen() {
                   ಸಹಜ ಕೃಷಿ
                 </Text>
                 <Text style={styles.departmentText}>
-                  Department of Agriculture • ಕೃಷಿ ಇಲಾಖೆ
+                  ಕೃಷಿ ಇಲಾಖೆ
                 </Text>
               </Animated.View>
 
@@ -239,13 +239,13 @@ export default function LoginScreen() {
                           <MaterialIcons name="login" size={24} color="white" />
                         </LinearGradient>
                       </View>
-                      <Text style={styles.formTitle}>Farmer Login</Text>
+                      <Text style={styles.formTitle}>ರೈತ ಲಾಗಿನ್</Text>
                       <Text style={styles.formSubtitle}>ಮೊಬೈಲ್ + ಜನ್ಮ ದಿನಾಂಕ ಲಾಗಿನ್</Text>
                     </View>
 
                     {/* Phone Number Input with visible text */}
                     <View style={styles.inputContainer}>
-                      <Text style={styles.inputLabel}>Phone Number / ಫೋನ್ ಸಂಖ್ಯೆ</Text>
+                      <Text style={styles.inputLabel}>ಫೋನ್ ಸಂಖ್ಯೆ</Text>
                       <TextInput
                         mode="outlined"
                         value={phoneNumber}
@@ -257,7 +257,7 @@ export default function LoginScreen() {
                         }}
                         style={[styles.input, { height: responsiveStyles.inputHeight }]}
                         left={<TextInput.Icon icon="phone" iconColor="#666" />}
-                        placeholder="Enter 10-digit mobile number"
+                        placeholder="10 ಅಂಕಿ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ"
                         placeholderTextColor="#999"
                         keyboardType="number-pad"
                         outlineColor="rgba(46, 125, 50, 0.3)"
@@ -285,14 +285,14 @@ export default function LoginScreen() {
 
                     {/* Date of Birth Input with visible text */}
                     <View style={styles.inputContainer}>
-                      <Text style={styles.inputLabel}>Date of Birth / ಜನ್ಮ ದಿನಾಂಕ</Text>
+                      <Text style={styles.inputLabel}>ಜನ್ಮ ದಿನಾಂಕ</Text>
                       <TextInput
                         mode="outlined"
                         value={dob}
                         onChangeText={v => { setDob(v); setDobError(''); setLoginError(''); }}
                         style={[styles.input, { height: responsiveStyles.inputHeight }]}
                         left={<TextInput.Icon icon="calendar" iconColor="#666" onPress={onPressOpenPicker} />}
-                        placeholder="YYYY-MM-DD or DD/MM/YYYY"
+                        placeholder="YYYY-MM-DD ಅಥವಾ DD/MM/YYYY"
                         placeholderTextColor="#999"
                         outlineColor="rgba(46, 125, 50, 0.3)"
                         activeOutlineColor="#388E3C"
@@ -350,7 +350,7 @@ export default function LoginScreen() {
                             <MaterialIcons name="login" size={20} color="white" />
                           )}
                           <Text style={styles.buttonText}>
-                            {isLoggingIn ? 'Logging in...' : 'Login / ಲಾಗಿನ್'}
+                            {isLoggingIn ? 'ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ...' : 'ಲಾಗಿನ್'}
                           </Text>
                         </View>
                       </LinearGradient>
@@ -366,9 +366,7 @@ export default function LoginScreen() {
                     {/* Help Text */}
                     <View style={styles.helpContainer}>
                       <MaterialIcons name="info" size={14} color="#666" />
-                      <Text style={styles.helpText}>
-                        Enter your registered mobile number and date of birth
-                      </Text>
+                      <Text style={styles.helpText}>ನಿಮ್ಮ ನೋಂದಾಯಿತ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಮತ್ತು ಜನ್ಮ ದಿನಾಂಕ ನಮೂದಿಸಿ</Text>
                     </View>
                   </View>
                 </Card>
@@ -377,7 +375,7 @@ export default function LoginScreen() {
               {/* Credits (small, unobtrusive, no extra height) */}
               <View style={{ alignItems: 'center', paddingVertical: 4 }}>
                 <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 11, fontWeight: '700' }}>
-                  Developed by Prajwal D R & Shivu T J
+                  © 2025 • Developed by Prajwal D R & Shivu T J
                 </Text>
               </View>
             </View>
@@ -440,11 +438,11 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     letterSpacing: 0.5,
   },
   departmentText: {
-    fontSize: isSmallScreen ? 10 : isTablet ? 14 : 12,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: isSmallScreen ? 12 : isTablet ? 16 : 14,
+    color: 'rgba(255, 255, 255, 0.95)',
     textAlign: 'center',
-    fontWeight: '600',
-    letterSpacing: 0.3,
+    fontWeight: '800',
+    letterSpacing: 0.4,
   },
   formContainer: {
     flex: 1,
@@ -485,16 +483,16 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     elevation: 4,
   },
   formTitle: {
-    fontSize: isSmallScreen ? 16 : isTablet ? 22 : 18,
+    fontSize: isSmallScreen ? 18 : isTablet ? 24 : 20,
     color: '#2E7D32',
-    fontWeight: '800',
+    fontWeight: '900',
     marginBottom: 6,
   },
   formSubtitle: {
-    fontSize: isSmallScreen ? 12 : isTablet ? 16 : 14,
-    color: '#FF6F00',
+    fontSize: isSmallScreen ? 12 : isTablet ? 14 : 13,
+    color: '#F57C00',
     fontWeight: '700',
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
   inputContainer: {
     marginBottom: height * 0.02,
