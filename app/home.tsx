@@ -18,7 +18,7 @@ export default function HomeScreen() {
     padding: isSmallScreen ? 4 : isTablet ? 10 : 8,
     titleSize: isSmallScreen ? 14 : isTablet ? 18 : 16,
     heroHeight: Math.min(height * 0.11, isTablet ? 96 : 88),
-    menuIconSize: isSmallScreen ? 11 : isTablet ? 16 : 14,
+    menuIconSize: isSmallScreen ? 10 : isTablet ? 15 : 13,
     statIconSize: isSmallScreen ? 16 : isTablet ? 22 : 18,
     cardSpacing: isSmallScreen ? 4 : isTablet ? 6 : 4,
   }), [isSmallScreen, isTablet, height]);
@@ -268,7 +268,7 @@ export default function HomeScreen() {
               key={i}
               style={[
                 styles.menuCard,
-                { width: '46%', aspectRatio: 0.68, marginBottom: responsiveStyles.cardSpacing }
+                { width: '46%', aspectRatio: 0.6, marginBottom: responsiveStyles.cardSpacing }
               ]}
               onPress={() => router.push(item.route)}
               activeOpacity={0.8}
@@ -488,8 +488,8 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     flex: 1,
     width: '100%',
     height: '100%',
-    paddingVertical: 8,
-    paddingHorizontal: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 5,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 12,
@@ -500,7 +500,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     textAlign: 'center',
     marginTop: 4,
     marginBottom: 2,
-    fontSize: 10,
+    fontSize: 9,
     letterSpacing: 0.2,
     textShadowColor: 'rgba(0,0,0,0.3)',
     textShadowOffset: { width: 0, height: 1 },
@@ -508,7 +508,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   },
   menuSubtitle: {
     color: 'rgba(255,255,255,0.9)',
-    fontSize: 7,
+    fontSize: 6,
     fontWeight: '600',
     textAlign: 'center',
   },
