@@ -61,25 +61,25 @@ export default function CreateCropReportScreen() {
         return;
       }
 
-      // Step 4: Get farmer database ID
-      const farmerUrl = `${FARMERS_BASE}/farmer-id/${encodeURIComponent(session.farmerId)}`;
-      const farmerResponse = await fetch(farmerUrl);
-      
-      if (!farmerResponse.ok) {
-        throw new Error(`Failed to fetch farmer details: ${farmerResponse.status}`);
+      // Step 4: Get farmer database ID (with graceful fallback if unauthorized)
+      let farmerId: number | null = null;
+      try {
+        const farmerUrl = `${FARMERS_BASE}/farmer-id/${encodeURIComponent(session.farmerId)}`;
+        const farmerResponse = await fetch(farmerUrl);
+        if (!farmerResponse.ok) throw new Error(String(farmerResponse.status));
+        const farmerData = await farmerResponse.json();
+        if (farmerData?.success && farmerData?.data?.id) {
+          farmerId = farmerData.data.id as number;
+        }
+      } catch (e) {
+        // Fallback: continue without DB id; backend should associate by external farmerId string
+        farmerId = null;
       }
-      
-      const farmerData = await farmerResponse.json();
-      
-      if (!farmerData.success || !farmerData.data) {
-        throw new Error('Invalid farmer data received');
-      }
-      
-      const farmerId = farmerData.data.id;
 
       // Step 5: Create crop report
       const payload = {
-        farmerId,
+        farmerId: farmerId,
+        farmerExternalId: session.farmerId,
         cropName: formData.cropName.trim(),
         cropType: null,
         areaHectares: formData.areaHectares ? Number(formData.areaHectares) : null,
@@ -104,10 +104,7 @@ export default function CreateCropReportScreen() {
       const result = await response.json();
 
       if (result.success) {
-        const newId = String(result?.data?.id || '');
-        // After successful creation, go back to list and ensure it refreshes
         router.replace('/crop-reports');
-        // Optionally navigate to detail: router.push({ pathname: '/crop-report-detail', params: { id: newId } });
       } else {
         throw new Error(result.message || 'Failed to create crop report');
       }

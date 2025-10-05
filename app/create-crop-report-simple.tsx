@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert, Platform, TouchableOpacity } from 'react-native';
-import { Text, TextInput, Button, Card, useTheme } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Button, Card, Text, TextInput, useTheme } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { CROP_REPORTS_BASE, FARMERS_BASE, getApiBaseUrl } from './config/api';
 
 export default function CreateCropReportSimpleScreen() {
@@ -42,30 +41,28 @@ export default function CreateCropReportSimpleScreen() {
       }
       console.log('✓ Farmer session found');
 
-      // Step 4: Get farmer database ID
-      const farmerUrl = `${FARMERS_BASE}/farmer-id/${encodeURIComponent(session.farmerId)}`;
-      console.log('Fetching farmer from:', farmerUrl);
-      
-      const farmerResponse = await fetch(farmerUrl);
-      console.log('Farmer response status:', farmerResponse.status);
-      
-      if (!farmerResponse.ok) {
-        throw new Error(`Farmer fetch failed: ${farmerResponse.status}`);
+      // Step 4: Try to get farmer database ID; fallback if unauthorized
+      let farmerId: number | null = null;
+      try {
+        const farmerUrl = `${FARMERS_BASE}/farmer-id/${encodeURIComponent(session.farmerId)}`;
+        console.log('Fetching farmer from:', farmerUrl);
+        const farmerResponse = await fetch(farmerUrl);
+        console.log('Farmer response status:', farmerResponse.status);
+        if (!farmerResponse.ok) throw new Error(String(farmerResponse.status));
+        const farmerData = await farmerResponse.json();
+        console.log('Farmer data:', farmerData);
+        if (farmerData?.success && farmerData?.data?.id) {
+          farmerId = farmerData.data.id;
+        }
+      } catch (e) {
+        console.log('Farmer fetch failed, using fallback with external id');
+        farmerId = null;
       }
-      
-      const farmerData = await farmerResponse.json();
-      console.log('Farmer data:', farmerData);
-      
-      if (!farmerData.success || !farmerData.data) {
-        throw new Error('Invalid farmer data');
-      }
-      
-      const farmerId = farmerData.data.id;
-      console.log('✓ Farmer ID:', farmerId);
 
       // Step 5: Create crop report
       const payload = {
-        farmerId,
+        farmerId: farmerId,
+        farmerExternalId: session.farmerId,
         cropName: cropName.trim(),
         cropType: null,
         areaHectares: areaHectares ? Number(areaHectares) : null,
@@ -95,8 +92,7 @@ export default function CreateCropReportSimpleScreen() {
 
       if (result.success) {
         console.log('✓ Crop report created successfully');
-        const newId = String(result?.data?.id || '');
-        router.replace({ pathname: '/crop-report-detail', params: { id: newId } });
+        router.replace('/crop-reports');
       } else {
         throw new Error(result.message || 'Failed to create crop report');
       }
