@@ -63,10 +63,7 @@ export default function CreateCropReportScreen() {
 
       // Step 4: Get farmer database ID
       const farmerUrl = `${FARMERS_BASE}/farmer-id/${encodeURIComponent(session.farmerId)}`;
-      const authHeaders: any = { 'Content-Type': 'application/json' };
-      if (session?.token) authHeaders.Authorization = `Bearer ${session.token}`;
-
-      const farmerResponse = await fetch(farmerUrl, { headers: authHeaders, signal: AbortSignal.timeout(12000) });
+      const farmerResponse = await fetch(farmerUrl);
       
       if (!farmerResponse.ok) {
         throw new Error(`Failed to fetch farmer details: ${farmerResponse.status}`);
@@ -93,7 +90,9 @@ export default function CreateCropReportScreen() {
 
       const response = await fetch(CROP_REPORTS_BASE, {
         method: 'POST',
-        headers: authHeaders,
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(payload),
       });
 
@@ -186,10 +185,9 @@ export default function CreateCropReportScreen() {
                 value={formData.description}
                 onChangeText={(value) => handleInputChange('description', value)}
                 placeholder="Additional notes about your crop..."
-                placeholderTextColor="#6B7280"
                 multiline
                 numberOfLines={3}
-                style={[styles.input, { color: '#111' }]}
+                style={styles.input}
               />
             </View>
           </Card.Content>
@@ -300,7 +298,6 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#fff',
-    color: '#111',
   },
   // Removed date picker styles
   // Removed crop type styles as field is no longer used

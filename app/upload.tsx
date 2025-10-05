@@ -215,11 +215,11 @@ export default function UploadScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerIcon}>
-          <MaterialIcons name="cloud-upload" size={24} color="#fff" />
+          <MaterialIcons name="agriculture" size={24} color="#fff" />
         </View>
         <View style={styles.headerText}>
-          <Text style={styles.headerTitle}>Upload Crop Query</Text>
-          <Text style={styles.headerSubtitle}>ಹೊಸ ಪ್ರಶ್ನೆ</Text>
+          <Text style={styles.headerTitle}>New Report</Text>
+          <Text style={styles.headerSubtitle}>ಹೊಸ ವರದಿ</Text>
         </View>
       </View>
 
@@ -227,8 +227,8 @@ export default function UploadScreen() {
         <View style={styles.content}>
           {/* Description */}
           <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Description</Text>
-              <Text style={styles.sectionSubtitle}>ವಿವರಣೆ</Text>
+            <Text style={styles.sectionTitle}>Description</Text>
+            <Text style={styles.sectionSubtitle}>ವಿವರಣೆ</Text>
             <TextInput
               mode="outlined"
               placeholder="Describe your crop condition and any concerns..."
@@ -364,7 +364,7 @@ export default function UploadScreen() {
               disabled={(!description && !selectedImage && !audioUri && !videoUri) || isSubmitting}
             >
               <MaterialIcons name="cloud-upload" size={20} color="#fff" />
-              <Text style={styles.submitButtonText}>{isSubmitting ? 'Submitting...' : 'Submit Query'}</Text>
+              <Text style={styles.submitButtonText}>{isSubmitting ? 'Submitting...' : 'Submit Report'}</Text>
             </TouchableOpacity>
             <Text style={styles.submitHint}>
               Add a description or at least one media file
@@ -437,7 +437,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: '#fff',
-    color: '#111',
     fontSize: 14,
   },
   mediaGrid: {
