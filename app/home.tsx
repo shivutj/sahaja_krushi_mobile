@@ -15,12 +15,12 @@ export default function HomeScreen() {
   const isTablet = width >= 768;
   
   const responsiveStyles = useMemo(() => ({
-    padding: isSmallScreen ? 8 : isTablet ? 16 : 12,
+    padding: isSmallScreen ? 6 : isTablet ? 14 : 10,
     titleSize: isSmallScreen ? 14 : isTablet ? 18 : 16,
-    heroHeight: Math.min(height * 0.22, isTablet ? 160 : 140),
+    heroHeight: Math.min(height * 0.18, isTablet ? 140 : 120),
     menuIconSize: isSmallScreen ? 16 : isTablet ? 22 : 20,
-    statIconSize: isSmallScreen ? 20 : isTablet ? 28 : 24,
-    cardSpacing: isSmallScreen ? 6 : isTablet ? 12 : 8,
+    statIconSize: isSmallScreen ? 18 : isTablet ? 24 : 20,
+    cardSpacing: isSmallScreen ? 6 : isTablet ? 10 : 8,
   }), [isSmallScreen, isTablet, height]);
 
   const { uploaded } = useLocalSearchParams<{ uploaded?: string }>();
@@ -395,7 +395,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   },
   heroGradient: { 
     flex: 1,
-    padding: 16,
+    padding: 12,
     justifyContent: 'center',
   },
   heroContent: {
@@ -455,7 +455,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   // Professional Stats Section
   statsSection: {
     paddingHorizontal: responsiveStyles.padding,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   statsGrid: { 
     flexDirection: 'row', 
@@ -463,9 +463,9 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     gap: 8,
   },
   statCard: {
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
     alignItems: 'center',
     flex: 1,
     shadowColor: '#000',
@@ -497,7 +497,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   // Professional Menu Section - Full mobile layout
   menuSection: {
     paddingHorizontal: responsiveStyles.padding,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   menuGrid: { 
     flexDirection: 'row', 
@@ -514,11 +514,11 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     elevation: 4,
   },
   menuCardContent: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 72,
+    minHeight: 64,
   },
   menuIconContainer: {
     width: 46,
