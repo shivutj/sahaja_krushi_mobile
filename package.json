@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
+    "start:optimized": "expo start --no-dev --minify",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -11,8 +12,12 @@
     "lint": "expo lint",
     "build": "expo export --platform web",
     "build:web": "expo export --platform web",
+    "build:optimized": "expo export --platform web --no-dev --minify",
     "deploy:web": "npm run build:web && echo 'Upload the dist folder to Netlify or Vercel'",
+    "deploy:optimized": "npm run build:optimized && echo 'Optimized build ready for deployment'",
     "deploy": "./deploy.sh",
+    "test:performance": "expo start --no-dev --minify --android",
+    "clean": "expo r -c",
     "render-build": "npm install && npm run build"
   },
   "dependencies": {
