@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity, useWindowDimensions, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Animated, useWindowDimensions, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import { Text, Card, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -8,19 +8,23 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QUERIES_BASE } from './config/api';
 
-// Professional home screen with better colors and full mobile layout
+const initialDims = Dimensions.get('window');
+const initialIsSmall = initialDims.width < 360;
+const initialIsTablet = initialDims.width > 600;
+
+// Redesigned home screen with better layout and colors
 export default function HomeScreen() {
   const { width, height } = useWindowDimensions();
   const isSmallScreen = width < 360;
   const isTablet = width >= 768;
   
   const responsiveStyles = useMemo(() => ({
-    padding: isSmallScreen ? 8 : isTablet ? 16 : 12,
-    titleSize: isSmallScreen ? 14 : isTablet ? 18 : 16,
-    heroHeight: Math.min(height * 0.22, isTablet ? 160 : 140),
-    menuIconSize: isSmallScreen ? 18 : isTablet ? 24 : 22,
-    statIconSize: isSmallScreen ? 22 : isTablet ? 30 : 26,
-    cardSpacing: isSmallScreen ? 6 : isTablet ? 12 : 8,
+    padding: isSmallScreen ? 12 : isTablet ? 20 : 16,
+    titleSize: isSmallScreen ? 16 : isTablet ? 20 : 18,
+    heroHeight: Math.min(height * 0.22, isTablet ? 200 : 180),
+    menuIconSize: isSmallScreen ? 20 : isTablet ? 28 : 24,
+    statIconSize: isSmallScreen ? 28 : isTablet ? 36 : 32,
+    cardSpacing: isSmallScreen ? 8 : isTablet ? 16 : 12,
   }), [isSmallScreen, isTablet, height]);
 
   const { uploaded } = useLocalSearchParams<{ uploaded?: string }>();
@@ -29,6 +33,7 @@ export default function HomeScreen() {
   const [summary, setSummary] = useState({ total: 0, open: 0, answered: 0, closed: 0 });
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [showUploadSuccess, setShowUploadSuccess] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Optimized time update
   useEffect(() => {
@@ -51,7 +56,7 @@ export default function HomeScreen() {
     }
   }, [uploaded]);
 
-  // Optimized summary fetching
+  // Optimized summary fetching with caching
   const fetchSummary = useCallback(async () => {
     try {
       setLoadingSummary(true);
@@ -102,6 +107,12 @@ export default function HomeScreen() {
     }
   }, []);
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchSummary();
+    setRefreshing(false);
+  }, [fetchSummary]);
+
   useEffect(() => {
     fetchSummary();
   }, [fetchSummary]);
@@ -114,55 +125,55 @@ export default function HomeScreen() {
     });
   }, [currentTime]);
 
-  // Professional menu items with muted colors
+  // Redesigned menu items with better colors
   const menuItems = useMemo(() => [
     { 
-      title: 'ಕೃಷಿ ಪ್ರಶ್ನೆ', 
+      title: 'ಕೃಷಿ ಪ್ರಶ್ನೆ ಅಪ್ಲೋಡ್', 
       subtitle: 'Upload Query',
       icon: 'cloud-upload' as const, 
       route: '/upload' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(46, 125, 50, 0.1)',
+      gradient: ['#2E7D32', '#388E3C', '#4CAF50'] as const,
+      iconBg: 'rgba(76, 175, 80, 0.15)',
     },
     { 
-      title: 'ಪ್ರಶ್ನೆಗಳು', 
+      title: 'ಪ್ರಶ್ನೆಗಳ ಸ್ಥಿತಿ', 
       subtitle: 'Query Status',
       icon: 'history' as const, 
       route: '/history' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(21, 101, 192, 0.1)',
+      gradient: ['#1976D2', '#2196F3', '#42A5F5'] as const,
+      iconBg: 'rgba(33, 150, 243, 0.15)',
     },
     { 
       title: 'ಬೆಳೆ ವರದಿಗಳು', 
       subtitle: 'Crop Reports',
       icon: 'agriculture' as const, 
       route: '/crop-reports' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(230, 81, 0, 0.1)',
+      gradient: ['#F57C00', '#FF9800', '#FFB74D'] as const,
+      iconBg: 'rgba(255, 152, 0, 0.15)',
     },
     { 
-      title: 'ಸುದ್ದಿಗಳು', 
-      subtitle: 'News',
+      title: 'ಕೃಷಿ ಸುದ್ದಿಗಳು', 
+      subtitle: 'Agri News',
       icon: 'article' as const, 
       route: '/news' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(106, 27, 154, 0.1)',
+      gradient: ['#7B1FA2', '#9C27B0', '#BA68C8'] as const,
+      iconBg: 'rgba(156, 39, 176, 0.15)',
     },
     { 
-      title: 'ಜ್ಞಾನ', 
-      subtitle: 'Knowledge',
+      title: 'ಜ್ಞಾನ ಆಧಾರ', 
+      subtitle: 'Knowledge Base',
       icon: 'school' as const, 
       route: '/knowledge' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(198, 40, 40, 0.1)',
+      gradient: ['#D32F2F', '#F44336', '#EF5350'] as const,
+      iconBg: 'rgba(244, 67, 54, 0.15)',
     },
     { 
-      title: 'ವಿವರಗಳು', 
-      subtitle: 'Details',
+      title: 'ಸಹಜ ಕೃಷಿ ವಿವರಗಳು', 
+      subtitle: 'Sahaja Details',
       icon: 'info' as const, 
       route: '/sahaja-details' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(55, 71, 79, 0.1)',
+      gradient: ['#455A64', '#607D8B', '#90A4AE'] as const,
+      iconBg: 'rgba(96, 125, 139, 0.15)',
     },
   ], []);
 
@@ -172,14 +183,14 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {showUploadSuccess && (
         <View style={styles.successBanner}>
-          <MaterialIcons name="check-circle" size={16} color="#2E7D32" />
-          <Text style={styles.successBannerText}>Welcome back!</Text>
+          <MaterialIcons name="check-circle" size={18} color="#2E7D32" />
+          <Text style={styles.successBannerText}>Welcome back! Upload successful.</Text>
         </View>
       )}
       
-      {/* Professional Header */}
+      {/* Redesigned Header with better spacing */}
       <LinearGradient 
-        colors={['#0D5302', '#1B5E20', '#2E7D32']} 
+        colors={['#1B5E20', '#2E7D32', '#388E3C']} 
         start={{x: 0, y: 0}} 
         end={{x: 1, y: 1}}
         style={styles.header}
@@ -188,11 +199,11 @@ export default function HomeScreen() {
           <View style={styles.headerContent}>
             <View style={styles.logoSection}>
               <View style={styles.govLogo}>
-                <MaterialIcons name="eco" size={22} color="#C8E6C9" />
+                <MaterialIcons name="eco" size={24} color="#C8E6C9" />
               </View>
               <View>
                 <Text style={[styles.appTitle, { fontSize: responsiveStyles.titleSize }]}>ಸಹಜ ಕೃಷಿ</Text>
-                <Text style={styles.govText}>Govt. of Karnataka</Text>
+                <Text style={styles.govText}>Government of Karnataka</Text>
               </View>
             </View>
             
@@ -205,122 +216,126 @@ export default function HomeScreen() {
         </SafeAreaView>
       </LinearGradient>
 
-      {/* Professional Hero Section */}
-      <View style={[styles.heroSection, { height: responsiveStyles.heroHeight }]}>
-        <LinearGradient 
-          colors={['#0D5302', '#1B5E20', '#2E7D32']} 
-          style={styles.heroGradient}
-          start={{x: 0, y: 0}} 
-          end={{x: 1, y: 1}}
-        >
-          <View style={styles.heroContent}>
-            <Text style={styles.greeting}>{greeting}</Text>
-            <Text style={styles.heroTitle}>ರೈತರೇ, ನಮಸ್ಕಾರ</Text>
-            
-            <View style={styles.infoRow}>
-              <View style={styles.weatherInfo}>
-                <MaterialIcons name="wb-sunny" size={18} color="#FFEB3B" />
-                <Text style={styles.infoText}>28°C</Text>
-              </View>
-              <View style={styles.timeInfo}>
-                <MaterialIcons name="access-time" size={16} color="white" />
-                <Text style={styles.timeText}>{formatTime()}</Text>
-              </View>
-            </View>
-          </View>
-        </LinearGradient>
-      </View>
-
-      {/* Professional Stats Section */}
-      <View style={styles.statsSection}>
-        <View style={styles.statsGrid}>
-          <View style={[styles.statCard, { backgroundColor: '#E8F5E8' }]}>
-            <MaterialIcons name="assignment" size={responsiveStyles.statIconSize} color="#2E7D32" />
-            <View style={styles.statNumberContainer}>
-              {loadingSummary ? (
-                <ActivityIndicator size="small" color="#2E7D32" />
-              ) : (
-                <Text style={[styles.statNumber, { color: '#2E7D32' }]}>{summary.total}</Text>
-              )}
-            </View>
-            <Text style={styles.statLabel}>ಒಟ್ಟು</Text>
-          </View>
-          
-          <View style={[styles.statCard, { backgroundColor: '#FFF3E0' }]}>
-            <MaterialIcons name="pending-actions" size={responsiveStyles.statIconSize} color="#F57C00" />
-            <View style={styles.statNumberContainer}>
-              {loadingSummary ? (
-                <ActivityIndicator size="small" color="#F57C00" />
-              ) : (
-                <Text style={[styles.statNumber, { color: '#F57C00' }]}>{summary.open}</Text>
-              )}
-            </View>
-            <Text style={styles.statLabel}>ಬಾಕಿ</Text>
-          </View>
-          
-          <View style={[styles.statCard, { backgroundColor: '#E8F5E8' }]}>
-            <MaterialIcons name="check-circle" size={responsiveStyles.statIconSize} color="#2E7D32" />
-            <View style={styles.statNumberContainer}>
-              {loadingSummary ? (
-                <ActivityIndicator size="small" color="#2E7D32" />
-              ) : (
-                <Text style={[styles.statNumber, { color: '#2E7D32' }]}>{summary.answered}</Text>
-              )}
-            </View>
-            <Text style={styles.statLabel}>ಉತ್ತರ</Text>
-          </View>
-          
-          <View style={[styles.statCard, { backgroundColor: '#F3E5F5' }]}>
-            <MaterialIcons name="task-alt" size={responsiveStyles.statIconSize} color="#7B1FA2" />
-            <View style={styles.statNumberContainer}>
-              {loadingSummary ? (
-                <ActivityIndicator size="small" color="#7B1FA2" />
-              ) : (
-                <Text style={[styles.statNumber, { color: '#7B1FA2' }]}>{summary.closed}</Text>
-              )}
-            </View>
-            <Text style={styles.statLabel}>ಮುಗಿದಿದೆ</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Professional Menu Section - Full mobile layout */}
-      <View style={styles.menuSection}>
-        <View style={styles.menuGrid}>
-          {menuItems.map((item, i) => (
-            <TouchableOpacity
-              key={i}
-              style={[
-                styles.menuCard,
-                { 
-                  width: '48%',
-                  marginBottom: responsiveStyles.cardSpacing,
-                }
-              ]}
-              onPress={() => router.push(item.route)}
-              activeOpacity={0.8}
-            >
-              <LinearGradient 
-                colors={item.gradient} 
-                start={{x: 0, y: 0}} 
-                end={{x: 1, y: 1}}
-                style={styles.menuCardContent}
-              >
-                <View style={[styles.menuIconContainer, { backgroundColor: item.iconBg }]}>
-                  <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="white" />
+      {/* Scrollable Content */}
+      <ScrollView 
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {/* Redesigned Hero Section */}
+        <View style={[styles.heroSection, { height: responsiveStyles.heroHeight }]}>
+          <LinearGradient 
+            colors={['#0D5302', '#1B5E20', '#2E7D32']} 
+            style={styles.heroGradient}
+            start={{x: 0, y: 0}} 
+            end={{x: 1, y: 1}}
+          >
+            <View style={styles.heroContent}>
+              <Text style={styles.greeting}>{greeting}</Text>
+              <Text style={styles.heroTitle}>ರೈತರೇ, ನಮಸ್ಕಾರ</Text>
+              
+              <View style={styles.infoRow}>
+                <View style={styles.weatherInfo}>
+                  <MaterialIcons name="wb-sunny" size={18} color="#FFEB3B" />
+                  <Text style={styles.infoText}>28°C</Text>
                 </View>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          ))}
+                <View style={styles.timeInfo}>
+                  <MaterialIcons name="access-time" size={16} color="white" />
+                  <Text style={styles.timeText}>{formatTime()}</Text>
+                </View>
+              </View>
+            </View>
+          </LinearGradient>
         </View>
-      </View>
 
-      {/* Professional Footer */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>© 2025 ಕರ್ನಾಟಕ ಸರ್ಕಾರ • Digital India Initiative</Text>
-      </View>
+        {/* Redesigned Stats Section with better spacing */}
+        <View style={styles.statsSection}>
+          <Text style={styles.sectionTitle}>Your Dashboard</Text>
+          <View style={styles.statsGrid}>
+            <View style={[styles.statCard, { backgroundColor: '#E8F5E8' }]}>
+              <View style={[styles.statIconContainer, { backgroundColor: '#4CAF50' }]}>
+                <MaterialIcons name="assignment" size={responsiveStyles.statIconSize} color="white" />
+              </View>
+              <Text style={[styles.statNumber, { color: '#2E7D32' }]}>
+                {loadingSummary ? <ActivityIndicator size="small" color="#2E7D32" /> : summary.total}
+              </Text>
+              <Text style={styles.statLabel}>ಒಟ್ಟು</Text>
+            </View>
+            
+            <View style={[styles.statCard, { backgroundColor: '#FFF3E0' }]}>
+              <View style={[styles.statIconContainer, { backgroundColor: '#FF9800' }]}>
+                <MaterialIcons name="pending-actions" size={responsiveStyles.statIconSize} color="white" />
+              </View>
+              <Text style={[styles.statNumber, { color: '#F57C00' }]}>
+                {loadingSummary ? <ActivityIndicator size="small" color="#F57C00" /> : summary.open}
+              </Text>
+              <Text style={styles.statLabel}>ಬಾಕಿ</Text>
+            </View>
+            
+            <View style={[styles.statCard, { backgroundColor: '#E8F5E8' }]}>
+              <View style={[styles.statIconContainer, { backgroundColor: '#4CAF50' }]}>
+                <MaterialIcons name="check-circle" size={responsiveStyles.statIconSize} color="white" />
+              </View>
+              <Text style={[styles.statNumber, { color: '#2E7D32' }]}>
+                {loadingSummary ? <ActivityIndicator size="small" color="#2E7D32" /> : summary.answered}
+              </Text>
+              <Text style={styles.statLabel}>ಉತ್ತರ</Text>
+            </View>
+            
+            <View style={[styles.statCard, { backgroundColor: '#F3E5F5' }]}>
+              <View style={[styles.statIconContainer, { backgroundColor: '#9C27B0' }]}>
+                <MaterialIcons name="task-alt" size={responsiveStyles.statIconSize} color="white" />
+              </View>
+              <Text style={[styles.statNumber, { color: '#7B1FA2' }]}>
+                {loadingSummary ? <ActivityIndicator size="small" color="#7B1FA2" /> : summary.closed}
+              </Text>
+              <Text style={styles.statLabel}>ಮುಗಿದೆ</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Redesigned Menu Section with better layout */}
+        <View style={styles.menuSection}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.menuGrid}>
+            {menuItems.map((item, i) => (
+              <TouchableOpacity
+                key={i}
+                style={[
+                  styles.menuCard,
+                  { 
+                    width: isTablet ? '48%' : '47%',
+                    marginBottom: responsiveStyles.cardSpacing,
+                  }
+                ]}
+                onPress={() => router.push(item.route)}
+                activeOpacity={0.8}
+              >
+                <LinearGradient 
+                  colors={item.gradient} 
+                  start={{x: 0, y: 0}} 
+                  end={{x: 1, y: 1}}
+                  style={styles.menuCardContent}
+                >
+                  <View style={[styles.menuIconContainer, { backgroundColor: item.iconBg }]}>
+                    <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="white" />
+                  </View>
+                  <Text style={styles.menuTitle}>{item.title}</Text>
+                  <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Footer with better spacing */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>© 2025 ಕರ್ನಾಟಕ ಸರ್ಕಾರ • Digital India Initiative</Text>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -331,15 +346,15 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     backgroundColor: '#F8F9FA',
   },
   
-  // Professional Header
+  // Redesigned Header
   header: { 
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: responsiveStyles.padding,
     shadowColor: '#1B5E20',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 6,
+    shadowRadius: 8,
+    elevation: 8,
   },
   headerContent: { 
     flexDirection: 'row', 
@@ -349,12 +364,12 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   logoSection: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    gap: 10,
+    gap: 12,
   },
   govLogo: {
     backgroundColor: 'rgba(200,230,201,0.2)',
-    borderRadius: 8,
-    padding: 6,
+    borderRadius: 12,
+    padding: 8,
     borderWidth: 1,
     borderColor: 'rgba(200,230,201,0.3)',
   },
@@ -365,7 +380,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   },
   govText: {
     color: 'rgba(255,255,255,0.9)',
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: '600',
   },
   profileBtn: { 
@@ -373,32 +388,40 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 4,
+    elevation: 5,
   },
   profileCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.3)',
   },
 
-  // Professional Hero Section
+  // Scrollable Container
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+
+  // Redesigned Hero Section
   heroSection: { 
     margin: responsiveStyles.padding,
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
     shadowColor: '#1B5E20',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowRadius: 12,
+    elevation: 8,
   },
   heroGradient: { 
     flex: 1,
-    padding: 16,
+    padding: 20,
     justifyContent: 'center',
   },
   heroContent: {
@@ -406,15 +429,15 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   },
   greeting: { 
     color: '#C8E6C9', 
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '700',
     marginBottom: 4,
   },
   heroTitle: { 
     color: 'white', 
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '900', 
-    marginBottom: 12,
+    marginBottom: 16,
     textAlign: 'center',
     textShadowColor: 'rgba(0,0,0,0.3)',
     textShadowOffset: { width: 0, height: 1 },
@@ -429,79 +452,89 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   weatherInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
     backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 16,
   },
   infoText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '700',
   },
   timeInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
     backgroundColor: 'rgba(76,175,80,0.3)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 14,
   },
   timeText: { 
     color: 'white', 
     fontWeight: '600',
-    fontSize: 11,
+    fontSize: 13,
   },
 
-  // Professional Stats Section
+  // Redesigned Stats Section
   statsSection: {
     paddingHorizontal: responsiveStyles.padding,
-    paddingVertical: 12,
+    paddingVertical: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#2E7D32',
+    marginBottom: 16,
+    textAlign: 'center',
   },
   statsGrid: { 
     flexDirection: 'row', 
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 8,
+    gap: 12,
   },
   statCard: {
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
+    borderRadius: 16,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
     alignItems: 'center',
-    flex: 1,
+    width: '48%',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 8,
+    elevation: 4,
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.05)',
   },
-  statNumberContainer: {
-    marginTop: 4,
-    marginBottom: 4,
-    alignItems: 'center',
+  statIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   statNumber: { 
-    fontSize: 18, 
+    fontSize: 24, 
     fontWeight: '900', 
+    marginBottom: 4,
     textAlign: 'center',
   },
   statLabel: { 
-    fontSize: 10, 
+    fontSize: 13, 
     color: '#666', 
     fontWeight: '700',
     textAlign: 'center',
   },
 
-  // Professional Menu Section - Full mobile layout
+  // Redesigned Menu Section
   menuSection: {
-    flex: 1,
     paddingHorizontal: responsiveStyles.padding,
-    paddingVertical: 12,
+    paddingVertical: 20,
   },
   menuGrid: { 
     flexDirection: 'row', 
@@ -509,79 +542,80 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     justifyContent: 'space-between',
   },
   menuCard: {
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
   },
   menuCardContent: {
-    paddingVertical: 16,
-    paddingHorizontal: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 85,
+    minHeight: 120,
   },
   menuIconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: 'rgba(255,255,255,0.3)',
   },
   menuTitle: { 
     color: 'white', 
     fontWeight: '800', 
     textAlign: 'center',
-    marginBottom: 4,
-    fontSize: 12,
-    letterSpacing: 0.2,
+    marginBottom: 6,
+    fontSize: 14,
+    letterSpacing: 0.3,
     textShadowColor: 'rgba(0,0,0,0.3)',
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
+    textShadowRadius: 2,
   },
   menuSubtitle: {
     color: 'rgba(255,255,255,0.9)',
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: '600',
     textAlign: 'center',
   },
 
-  // Professional Footer
+  // Redesigned Footer
   footer: {
     backgroundColor: 'rgba(27,94,32,0.05)',
-    paddingVertical: 8,
+    paddingVertical: 16,
     paddingHorizontal: responsiveStyles.padding,
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: 'rgba(76,175,80,0.2)',
+    marginTop: 20,
   },
   footerText: {
-    fontSize: 9,
+    fontSize: 12,
     color: '#2E7D32',
     textAlign: 'center',
     fontWeight: '600',
   },
   successBanner: {
     position: 'absolute',
-    top: 6,
-    left: 10,
-    right: 10,
+    top: 8,
+    left: 12,
+    right: 12,
     zIndex: 10,
     backgroundColor: '#E8F5E8',
     borderColor: '#4CAF50',
     borderWidth: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -590,7 +624,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   },
   successBannerText: {
     color: '#2E7D32',
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '700',
   },
 });
