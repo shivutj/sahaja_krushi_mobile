@@ -7,6 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QUERIES_BASE } from './config/api';
+import { COLORS, GRADIENTS } from './config/theme';
 
 // Professional home screen with better colors and full mobile layout
 export default function HomeScreen() {
@@ -15,12 +16,12 @@ export default function HomeScreen() {
   const isTablet = width >= 768;
   
   const responsiveStyles = useMemo(() => ({
-    padding: isSmallScreen ? 8 : isTablet ? 16 : 12,
+    padding: isSmallScreen ? 6 : isTablet ? 12 : 8,
     titleSize: isSmallScreen ? 14 : isTablet ? 18 : 16,
-    heroHeight: Math.min(height * 0.22, isTablet ? 160 : 140),
-    menuIconSize: isSmallScreen ? 18 : isTablet ? 24 : 22,
-    statIconSize: isSmallScreen ? 22 : isTablet ? 30 : 26,
-    cardSpacing: isSmallScreen ? 6 : isTablet ? 12 : 8,
+    heroHeight: Math.min(height * 0.16, isTablet ? 130 : 110),
+    menuIconSize: isSmallScreen ? 15 : isTablet ? 20 : 18,
+    statIconSize: isSmallScreen ? 16 : isTablet ? 22 : 18,
+    cardSpacing: isSmallScreen ? 6 : isTablet ? 8 : 6,
   }), [isSmallScreen, isTablet, height]);
 
   const { uploaded } = useLocalSearchParams<{ uploaded?: string }>();
@@ -114,55 +115,62 @@ export default function HomeScreen() {
     });
   }, [currentTime]);
 
-  // Professional menu items with muted colors
+  // Card gradients (slightly vibrant, subtle)
+  const greenGrad = ['#3AAE55', '#2F8F46'] as const;
+  const blueGrad = ['#3B82F6', '#2563EB'] as const;
+  const orangeGrad = ['#FB923C', '#F97316'] as const;
+  const purpleGrad = ['#8B5CF6', '#7C3AED'] as const;
+  const slateGrad = ['#64748B', '#475569'] as const;
+
+  // Professional menu items with two-color palette
   const menuItems = useMemo(() => [
     { 
       title: 'ಕೃಷಿ ಪ್ರಶ್ನೆ', 
       subtitle: 'Upload Query',
       icon: 'cloud-upload' as const, 
       route: '/upload' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(46, 125, 50, 0.1)',
+      gradient: greenGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
     { 
       title: 'ಪ್ರಶ್ನೆಗಳು', 
       subtitle: 'Query Status',
       icon: 'history' as const, 
       route: '/history' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(21, 101, 192, 0.1)',
+      gradient: blueGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
     { 
       title: 'ಬೆಳೆ ವರದಿಗಳು', 
       subtitle: 'Crop Reports',
       icon: 'agriculture' as const, 
       route: '/crop-reports' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(230, 81, 0, 0.1)',
+      gradient: orangeGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
     { 
       title: 'ಸುದ್ದಿಗಳು', 
       subtitle: 'News',
       icon: 'article' as const, 
       route: '/news' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(106, 27, 154, 0.1)',
+      gradient: purpleGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
     { 
       title: 'ಜ್ಞಾನ', 
       subtitle: 'Knowledge',
       icon: 'school' as const, 
       route: '/knowledge' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(198, 40, 40, 0.1)',
+      gradient: slateGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
     { 
       title: 'ವಿವರಗಳು', 
       subtitle: 'Details',
       icon: 'info' as const, 
       route: '/sahaja-details' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(55, 71, 79, 0.1)',
+      gradient: greenGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
   ], []);
 
@@ -179,7 +187,7 @@ export default function HomeScreen() {
       
       {/* Professional Header */}
       <LinearGradient 
-        colors={['#0D5302', '#1B5E20', '#2E7D32']} 
+        colors={['#1F4D25', '#245A2A', '#2E6D37']} 
         start={{x: 0, y: 0}} 
         end={{x: 1, y: 1}}
         style={styles.header}
@@ -208,7 +216,7 @@ export default function HomeScreen() {
       {/* Professional Hero Section */}
       <View style={[styles.heroSection, { height: responsiveStyles.heroHeight }]}>
         <LinearGradient 
-          colors={['#0D5302', '#1B5E20', '#2E7D32']} 
+          colors={['#1F4D25', '#245A2A', '#2E6D37']} 
           style={styles.heroGradient}
           start={{x: 0, y: 0}} 
           end={{x: 1, y: 1}}
@@ -279,7 +287,7 @@ export default function HomeScreen() {
                 <Text style={[styles.statNumber, { color: '#7B1FA2' }]}>{summary.closed}</Text>
               )}
             </View>
-            <Text style={styles.statLabel}>ಮುಗಿದಿದೆ</Text>
+            <Text style={styles.statLabel}>ಮುಗಿದೆ</Text>
           </View>
         </View>
       </View>
@@ -293,7 +301,7 @@ export default function HomeScreen() {
               style={[
                 styles.menuCard,
                 { 
-                  width: '48%',
+                  width: '45%',
                   marginBottom: responsiveStyles.cardSpacing,
                 }
               ]}
@@ -301,13 +309,13 @@ export default function HomeScreen() {
               activeOpacity={0.8}
             >
               <LinearGradient 
-                colors={item.gradient} 
+                colors={item.gradient}
                 start={{x: 0, y: 0}} 
                 end={{x: 1, y: 1}}
                 style={styles.menuCardContent}
               >
-                <View style={[styles.menuIconContainer, { backgroundColor: item.iconBg }]}>
-                  <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="white" />
+                <View style={styles.menuIconContainerGradient}>
+                  <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="#fff" />
                 </View>
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
@@ -317,10 +325,7 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* Professional Footer */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>© 2025 ಕರ್ನಾಟಕ ಸರ್ಕಾರ • Digital India Initiative</Text>
-      </View>
+      {/* Footer removed to avoid overlap on small screens */}
     </View>
   );
 }
@@ -398,7 +403,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   },
   heroGradient: { 
     flex: 1,
-    padding: 16,
+    padding: 10,
     justifyContent: 'center',
   },
   heroContent: {
@@ -458,17 +463,17 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   // Professional Stats Section
   statsSection: {
     paddingHorizontal: responsiveStyles.padding,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   statsGrid: { 
     flexDirection: 'row', 
     justifyContent: 'space-between',
-    gap: 8,
+    gap: 6,
   },
   statCard: {
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
+    borderRadius: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 5,
     alignItems: 'center',
     flex: 1,
     shadowColor: '#000',
@@ -499,9 +504,8 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
 
   // Professional Menu Section - Full mobile layout
   menuSection: {
-    flex: 1,
     paddingHorizontal: responsiveStyles.padding,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   menuGrid: { 
     flexDirection: 'row', 
@@ -509,46 +513,39 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     justifyContent: 'space-between',
   },
   menuCard: {
-    borderRadius: 16,
+    borderRadius: 14,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 4,
   },
   menuCardContent: {
-    paddingVertical: 16,
-    paddingHorizontal: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 85,
+    minHeight: 62,
   },
-  menuIconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+  menuIconContainerGradient: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)'
   },
   menuTitle: { 
     color: 'white', 
-    fontWeight: '800', 
+    fontWeight: '900', 
     textAlign: 'center',
     marginBottom: 4,
-    fontSize: 12,
+    fontSize: 13,
     letterSpacing: 0.2,
-    textShadowColor: 'rgba(0,0,0,0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
   },
   menuSubtitle: {
-    color: 'rgba(255,255,255,0.9)',
-    fontSize: 9,
-    fontWeight: '600',
+    color: 'rgba(255,255,255,0.95)',
+    fontSize: 10,
+    fontWeight: '700',
     textAlign: 'center',
   },
 
