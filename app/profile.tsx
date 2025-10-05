@@ -504,6 +504,8 @@ const styles = StyleSheet.create({
     width: isTablet ? 100 : 70,
     height: isTablet ? 100 : 70,
     borderRadius: isTablet ? 50 : 35,
+    resizeMode: 'cover',
+    overflow: 'hidden',
   },
   profilePictureOverlay: {
     position: 'absolute',

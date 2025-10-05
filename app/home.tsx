@@ -293,7 +293,7 @@ export default function HomeScreen() {
               style={[
                 styles.menuCard,
                 { 
-                  width: '48%',
+                  width: '47.5%',
                   marginBottom: responsiveStyles.cardSpacing,
                 }
               ]}
@@ -514,11 +514,11 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     elevation: 4,
   },
   menuCardContent: {
-    paddingVertical: 16,
+    paddingVertical: 14,
     paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 85,
+    minHeight: 78,
   },
   menuIconContainer: {
     width: 50,

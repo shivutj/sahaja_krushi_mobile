@@ -241,7 +241,7 @@ export default function LoginScreen() {
                         </LinearGradient>
                       </View>
                       <Text style={styles.formTitle}>ರೈತ ಲಾಗಿನ್</Text>
-                      <Text style={styles.formSubtitle}>ಮೊಬೈಲ್ + ಜನ್ಮ ದಿನಾಂಕ ಲಾಗಿನ್</Text>
+                      
                     </View>
 
                     {/* Phone Number Input with visible text */}
@@ -374,8 +374,8 @@ export default function LoginScreen() {
               </Animated.View>
 
               {/* Credits (small, unobtrusive, no extra height) */}
-              <View style={{ alignItems: 'center', paddingVertical: 4 }}>
-                <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 11, fontWeight: '700' }}>
+              <View style={{ alignItems: 'center', paddingVertical: 6 }}>
+                <Text style={{ color: 'rgba(255,255,255,0.95)', fontSize: 12, fontWeight: '800', letterSpacing: 0.3 }}>
                   © 2025 • Developed by Prajwal D R & Shivu T J
                 </Text>
               </View>
