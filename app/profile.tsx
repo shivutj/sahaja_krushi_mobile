@@ -486,9 +486,9 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f9fafb' },
+  container: { flex: 1, backgroundColor: '#F5F6F7' },
   scrollContent: { padding: 16, paddingBottom: 32, maxWidth: 900, alignSelf: 'center' },
-  headerCard: { elevation: 4, borderRadius: 14, marginBottom: 20 },
+  headerCard: { elevation: 4, borderRadius: 14, marginBottom: 20, backgroundColor: '#FFFFFF' },
   headerContent: { flexDirection: 'row', alignItems: 'center', padding: 20, gap: 16 },
   
   // Profile Picture Styles
@@ -561,11 +561,11 @@ const styles = StyleSheet.create({
   editButton: { flex: 1, borderRadius: 12 },
   cancelButton: { flex: 1, borderRadius: 12 },
   saveButton: { flex: 1, borderRadius: 12 },
-  card: { marginBottom: 16, borderRadius: 12, elevation: 2 },
+  card: { marginBottom: 16, borderRadius: 12, elevation: 2, backgroundColor: '#FFFFFF' },
   fieldContainer: { marginBottom: 16 },
-  fieldLabel: { fontWeight: '600', marginBottom: 8, color: '#333', fontSize: 14 },
-  input: { backgroundColor: '#fff' },
-  staticValue: { backgroundColor: '#f3f4f6', padding: 12, borderRadius: 8 },
-  staticText: { fontSize: isTablet ? 16 : 14, fontWeight: '500', color: '#222' },
+  fieldLabel: { fontWeight: '700', marginBottom: 8, color: '#111', fontSize: 14 },
+  input: { backgroundColor: '#FFFFFF', color: '#000000' },
+  staticValue: { backgroundColor: '#FFFFFF', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#E5E7EB' },
+  staticText: { fontSize: isTablet ? 16 : 14, fontWeight: '600', color: '#111' },
   logoutButton: { marginTop: 24, borderColor: '#f44336', borderWidth: 1, borderRadius: 12, paddingVertical: 6 },
 });

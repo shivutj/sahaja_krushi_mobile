@@ -317,10 +317,7 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* Professional Footer */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>© 2025 ಕರ್ನಾಟಕ ಸರ್ಕಾರ • Digital India Initiative</Text>
-      </View>
+      {/* Footer removed to avoid overlap on small screens */}
     </View>
   );
 }

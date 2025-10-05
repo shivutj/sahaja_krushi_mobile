@@ -374,18 +374,12 @@ export default function LoginScreen() {
                 </Card>
               </Animated.View>
 
-              {/* Compact Footer */}
-              <Animated.View style={[styles.footer, { opacity: fadeAnim }]}>
-                <View style={styles.footerContent}>
-                  <MaterialIcons name="verified" size={16} color="#FFD54F" />
-                  <Text style={styles.footerText}>
-                    🇮🇳 Government of Karnataka • Digital India
-                  </Text>
-                </View>
-                <Text style={styles.footerSubtext}>
-                  ಕರ್ನಾಟಕ ಸರ್ಕಾರ • ಡಿಜಿಟಲ್ ಇಂಡಿಯಾ
+              {/* Credits (small, unobtrusive, no extra height) */}
+              <View style={{ alignItems: 'center', paddingVertical: 4 }}>
+                <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 11, fontWeight: '700' }}>
+                  Developed by Prajwal D R & Shivu T J
                 </Text>
-              </Animated.View>
+              </View>
             </View>
           </KeyboardAvoidingView>
         </SafeAreaView>
