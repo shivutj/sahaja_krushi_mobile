@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, Animated, TouchableOpacity, useWindowDimensions, ActivityIndicator, Keyboard } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
-import { Text, TextInput, Button, Card, useTheme } from 'react-native-paper';
+import { Text, TextInput, Button, Card, useTheme, Checkbox } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -24,6 +24,7 @@ export default function LoginScreen() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [rememberMe, setRememberMe] = useState(false);
   
   // Error states
   const [phoneError, setPhoneError] = useState('');
@@ -50,6 +51,21 @@ export default function LoginScreen() {
         useNativeDriver: true,
       })
     ]).start();
+  }, []);
+
+  // Load remembered credentials
+  useEffect(() => {
+    (async () => {
+      try {
+        const pref = await AsyncStorage.getItem('rememberLogin');
+        if (pref) {
+          const data = JSON.parse(pref);
+          if (data?.phone) setPhoneNumber(String(data.phone));
+          if (data?.dob) setDob(String(data.dob));
+          setRememberMe(true);
+        }
+      } catch {}
+    })();
   }, []);
 
   // Memoized functions
@@ -138,6 +154,11 @@ export default function LoginScreen() {
       
       const payload = res?.data?.data ?? res?.data ?? { contactNumber: phone };
       await AsyncStorage.setItem('farmerSession', JSON.stringify(payload));
+      if (rememberMe) {
+        await AsyncStorage.setItem('rememberLogin', JSON.stringify({ phone, dob: dobNormalized }));
+      } else {
+        await AsyncStorage.removeItem('rememberLogin');
+      }
       Keyboard.dismiss();
       router.replace('/home');
     } catch (e: any) {
@@ -326,6 +347,16 @@ export default function LoginScreen() {
                           <Text style={styles.errorText}>{dobError}</Text>
                         </View>
                       ) : null}
+                    </View>
+
+                    {/* Remember me */}
+                    <View style={styles.rememberRow}>
+                      <Checkbox
+                        status={rememberMe ? 'checked' : 'unchecked'}
+                        onPress={() => setRememberMe(!rememberMe)}
+                        color="#2E7D32"
+                      />
+                      <Text style={styles.rememberText}>ನನ್ನನ್ನು ನೆನಪಿರಲಿ</Text>
                     </View>
 
                     {/* Login Button */}
@@ -559,9 +590,20 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   helpContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginTop: height * 0.015,
+    marginTop: height * 0.02,
     paddingHorizontal: 8,
     gap: 6,
+  },
+  rememberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 6,
+  },
+  rememberText: {
+    color: '#333',
+    fontSize: 13,
+    fontWeight: '700',
   },
   helpText: {
     color: '#666',
