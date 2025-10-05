@@ -186,9 +186,10 @@ export default function CreateCropReportScreen() {
                 value={formData.description}
                 onChangeText={(value) => handleInputChange('description', value)}
                 placeholder="Additional notes about your crop..."
+                placeholderTextColor="#6B7280"
                 multiline
                 numberOfLines={3}
-                style={styles.input}
+                style={[styles.input, { color: '#111' }]}
               />
             </View>
           </Card.Content>
