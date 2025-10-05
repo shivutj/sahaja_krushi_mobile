@@ -257,7 +257,7 @@ export default function HomeScreen() {
             <Text style={[styles.statNumber, { color: '#7B1FA2' }]}>
               {loadingSummary ? <ActivityIndicator size="small" color="#7B1FA2" /> : summary.closed}
             </Text>
-            <Text style={styles.statLabel}>ಮುಗಿದೆ</Text>
+            <Text style={styles.statLabel}>ಮುಗಿದಿದೆ</Text>
           </View>
         </View>
       </View>
