@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity, useWindowDimensions, ActivityIndicator } from 'react-native';
-import { Text, Card, useTheme } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Text } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { QUERIES_BASE } from './config/api';
-import { COLORS, GRADIENTS } from './config/theme';
+import { GRADIENTS } from './config/theme';
 
 // Professional home screen with better colors and full mobile layout
 export default function HomeScreen() {
@@ -119,7 +119,7 @@ export default function HomeScreen() {
   const primaryGradient = GRADIENTS.primary;
   const neutralGradient = GRADIENTS.secondary;
 
-  // Professional menu items with two-color palette
+  // Professional menu items with two-color palette and light gradients
   const menuItems = useMemo(() => [
     { 
       title: 'ಕೃಷಿ ಪ್ರಶ್ನೆ', 
@@ -128,6 +128,7 @@ export default function HomeScreen() {
       route: '/upload' as const, 
       gradient: primaryGradient,
       iconBg: 'rgba(47, 110, 58, 0.12)',
+      lightGradient: ['#E9F7EF', '#DAF5E3'] as const,
     },
     { 
       title: 'ಪ್ರಶ್ನೆಗಳು', 
@@ -136,6 +137,7 @@ export default function HomeScreen() {
       route: '/history' as const, 
       gradient: neutralGradient,
       iconBg: 'rgba(63, 75, 83, 0.12)',
+      lightGradient: ['#EEF2F5', '#E8EFF5'] as const,
     },
     { 
       title: 'ಬೆಳೆ ವರದಿಗಳು', 
@@ -144,6 +146,7 @@ export default function HomeScreen() {
       route: '/crop-reports' as const, 
       gradient: primaryGradient,
       iconBg: 'rgba(47, 110, 58, 0.12)',
+      lightGradient: ['#E9F7EF', '#DAF5E3'] as const,
     },
     { 
       title: 'ಸುದ್ದಿಗಳು', 
@@ -152,6 +155,7 @@ export default function HomeScreen() {
       route: '/news' as const, 
       gradient: neutralGradient,
       iconBg: 'rgba(63, 75, 83, 0.12)',
+      lightGradient: ['#EEF2F5', '#E8EFF5'] as const,
     },
     { 
       title: 'ಜ್ಞಾನ', 
@@ -160,6 +164,7 @@ export default function HomeScreen() {
       route: '/knowledge' as const, 
       gradient: primaryGradient,
       iconBg: 'rgba(47, 110, 58, 0.12)',
+      lightGradient: ['#E9F7EF', '#DAF5E3'] as const,
     },
     { 
       title: 'ವಿವರಗಳು', 
@@ -168,6 +173,7 @@ export default function HomeScreen() {
       route: '/sahaja-details' as const, 
       gradient: neutralGradient,
       iconBg: 'rgba(63, 75, 83, 0.12)',
+      lightGradient: ['#EEF2F5', '#E8EFF5'] as const,
     },
   ], []);
 
@@ -305,13 +311,20 @@ export default function HomeScreen() {
               onPress={() => router.push(item.route)}
               activeOpacity={0.8}
             >
-              <View style={styles.menuCardContentPlain}>
-                <View style={styles.menuIconContainerPlain}>
-                  <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="#111" />
+              <LinearGradient
+                colors={item.lightGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.menuCardGradient}
+              >
+                <View style={styles.menuCardContentPlain}>
+                  <View style={styles.menuIconContainerPlain}>
+                    <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="#111" />
+                  </View>
+                  <Text style={styles.menuTitlePlain}>{item.title}</Text>
+                  <Text style={styles.menuSubtitlePlain}>{item.subtitle}</Text>
                 </View>
-                <Text style={styles.menuTitlePlain}>{item.title}</Text>
-                <Text style={styles.menuSubtitlePlain}>{item.subtitle}</Text>
-              </View>
+              </LinearGradient>
             </TouchableOpacity>
           ))}
         </View>
@@ -510,6 +523,10 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.08)',
     backgroundColor: '#F5F5F5',
+  },
+  menuCardGradient: {
+    width: '100%',
+    height: '100%',
   },
   menuCardContentPlain: {
     paddingVertical: 14,
