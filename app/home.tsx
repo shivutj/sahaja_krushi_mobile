@@ -115,48 +115,49 @@ export default function HomeScreen() {
   }, [currentTime]);
 
   // Compact menu items for single page
+  const orangeGrad: readonly [string, string] = ['#FFE5C2', '#FFC68A'];
   const menuItems = useMemo(() => [
     { 
       title: 'ಕೃಷಿ ಪ್ರಶ್ನೆ', 
       subtitle: 'Upload Query',
       icon: 'cloud-upload' as const, 
       route: '/upload' as const, 
-      gradient: ['#2E7D32', '#4CAF50'] as const,
+      gradient: orangeGrad,
     },
     { 
       title: 'ಪ್ರಶ್ನೆಗಳು', 
       subtitle: 'Query Status',
       icon: 'history' as const, 
       route: '/history' as const, 
-      gradient: ['#1976D2', '#42A5F5'] as const,
+      gradient: orangeGrad,
     },
     { 
       title: 'ಬೆಳೆ ವರದಿಗಳು', 
       subtitle: 'Crop Reports',
       icon: 'agriculture' as const, 
       route: '/crop-reports' as const, 
-      gradient: ['#F57C00', '#FFB74D'] as const,
+      gradient: orangeGrad,
     },
     { 
       title: 'ಸುದ್ದಿಗಳು', 
       subtitle: 'News',
       icon: 'article' as const, 
       route: '/news' as const, 
-      gradient: ['#7B1FA2', '#BA68C8'] as const,
+      gradient: orangeGrad,
     },
     { 
       title: 'ಜ್ಞಾನ', 
       subtitle: 'Knowledge',
       icon: 'school' as const, 
       route: '/knowledge' as const, 
-      gradient: ['#D32F2F', '#EF5350'] as const,
+      gradient: orangeGrad,
     },
     { 
       title: 'ವಿವರಗಳು', 
       subtitle: 'Details',
       icon: 'info' as const, 
       route: '/sahaja-details' as const, 
-      gradient: ['#455A64', '#90A4AE'] as const,
+      gradient: orangeGrad,
     },
   ], []);
 
@@ -270,10 +271,7 @@ export default function HomeScreen() {
               key={i}
               style={[
                 styles.menuCard,
-                { 
-                  width: '48%',
-                  marginBottom: responsiveStyles.cardSpacing,
-                }
+                { width: '48%', aspectRatio: 1 }
               ]}
               onPress={() => router.push(item.route)}
               activeOpacity={0.8}
@@ -516,14 +514,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   },
 
   // Compact Footer
-  footer: {
-    backgroundColor: 'rgba(27,94,32,0.05)',
-    paddingVertical: 6,
-    paddingHorizontal: responsiveStyles.padding,
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(76,175,80,0.2)',
-  },
+  footer: { display: 'none' },
   footerText: {
     fontSize: 8,
     color: '#2E7D32',
