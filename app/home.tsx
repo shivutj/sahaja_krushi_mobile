@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity, useWindowDimensions, ActivityIndicator } from 'react-native';
-import { Text, Card, useTheme } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Text } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { QUERIES_BASE } from './config/api';
 
 // Single-page home screen - no scrolling, everything fits on one screen
@@ -17,7 +17,7 @@ export default function HomeScreen() {
   const responsiveStyles = useMemo(() => ({
     padding: isSmallScreen ? 4 : isTablet ? 10 : 8,
     titleSize: isSmallScreen ? 14 : isTablet ? 18 : 16,
-    heroHeight: Math.min(height * 0.12, isTablet ? 100 : 92),
+    heroHeight: Math.min(height * 0.11, isTablet ? 96 : 88),
     menuIconSize: isSmallScreen ? 13 : isTablet ? 18 : 16,
     statIconSize: isSmallScreen ? 16 : isTablet ? 22 : 18,
     cardSpacing: isSmallScreen ? 4 : isTablet ? 6 : 4,
@@ -163,7 +163,7 @@ export default function HomeScreen() {
   const styles = useMemo(() => getStyles(isSmallScreen, isTablet, width, height, responsiveStyles), [isSmallScreen, isTablet, width, height, responsiveStyles]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {showUploadSuccess && (
         <View style={styles.successBanner}>
           <MaterialIcons name="check-circle" size={16} color="#2E7D32" />
@@ -178,25 +178,23 @@ export default function HomeScreen() {
         end={{x: 1, y: 1}}
         style={styles.header}
       >
-        <SafeAreaView>
-          <View style={styles.headerContent}>
-            <View style={styles.logoSection}>
-              <View style={styles.govLogo}>
-                <MaterialIcons name="eco" size={20} color="#C8E6C9" />
-              </View>
-              <View>
-                <Text style={[styles.appTitle, { fontSize: responsiveStyles.titleSize }]}>ಸಹಜ ಕೃಷಿ</Text>
-                <Text style={styles.govText}>Govt. of Karnataka</Text>
-              </View>
+        <View style={styles.headerContent}>
+          <View style={styles.logoSection}>
+            <View style={styles.govLogo}>
+              <MaterialIcons name="eco" size={20} color="#C8E6C9" />
             </View>
-            
-            <TouchableOpacity onPress={() => router.push('/profile')} style={styles.profileBtn}>
-              <LinearGradient colors={['#4CAF50', '#66BB6A']} style={styles.profileCircle}>
-                <MaterialIcons name="person" size={18} color="white" />
-              </LinearGradient>
-            </TouchableOpacity>
+            <View>
+              <Text style={[styles.appTitle, { fontSize: responsiveStyles.titleSize }]}>ಸಹಜ ಕೃಷಿ</Text>
+              <Text style={styles.govText}>Govt. of Karnataka</Text>
+            </View>
           </View>
-        </SafeAreaView>
+          
+          <TouchableOpacity onPress={() => router.push('/profile')} style={styles.profileBtn}>
+            <LinearGradient colors={['#4CAF50', '#66BB6A']} style={styles.profileCircle}>
+              <MaterialIcons name="person" size={18} color="white" />
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
 
       {/* Compact Hero Section */}
@@ -270,7 +268,7 @@ export default function HomeScreen() {
               key={i}
               style={[
                 styles.menuCard,
-                { width: '46%', aspectRatio: 0.8, marginBottom: responsiveStyles.cardSpacing }
+                { width: '46%', aspectRatio: 0.75, marginBottom: responsiveStyles.cardSpacing }
               ]}
               onPress={() => router.push(item.route)}
               activeOpacity={0.8}
@@ -294,7 +292,7 @@ export default function HomeScreen() {
       <View style={styles.footer}>
         <Text style={styles.footerText}>© 2025 ಕರ್ನಾಟಕ ಸರ್ಕಾರ • Digital India</Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
