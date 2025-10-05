@@ -15,12 +15,12 @@ export default function HomeScreen() {
   const isTablet = width >= 768;
   
   const responsiveStyles = useMemo(() => ({
-    padding: isSmallScreen ? 8 : isTablet ? 16 : 12,
+    padding: isSmallScreen ? 6 : isTablet ? 12 : 10,
     titleSize: isSmallScreen ? 14 : isTablet ? 18 : 16,
-    heroHeight: Math.min(height * 0.18, isTablet ? 140 : 120),
-    menuIconSize: isSmallScreen ? 16 : isTablet ? 22 : 20,
-    statIconSize: isSmallScreen ? 20 : isTablet ? 28 : 24,
-    cardSpacing: isSmallScreen ? 6 : isTablet ? 12 : 8,
+    heroHeight: Math.min(height * 0.14, isTablet ? 120 : 100),
+    menuIconSize: isSmallScreen ? 14 : isTablet ? 20 : 18,
+    statIconSize: isSmallScreen ? 18 : isTablet ? 24 : 20,
+    cardSpacing: isSmallScreen ? 6 : isTablet ? 8 : 6,
   }), [isSmallScreen, isTablet, height]);
 
   const { uploaded } = useLocalSearchParams<{ uploaded?: string }>();
@@ -270,7 +270,7 @@ export default function HomeScreen() {
               key={i}
               style={[
                 styles.menuCard,
-                { width: '48%', aspectRatio: 1 }
+                { width: '47%', aspectRatio: 0.85, marginBottom: responsiveStyles.cardSpacing }
               ]}
               onPress={() => router.push(item.route)}
               activeOpacity={0.8}
@@ -487,11 +487,14 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     elevation: 3,
   },
   menuCardContent: {
-    paddingVertical: 12,
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    paddingVertical: 10,
     paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 70,
+    borderRadius: 12,
   },
   menuTitle: { 
     color: 'white', 
