@@ -121,7 +121,7 @@ export default function HomeScreen() {
       subtitle: 'Upload Query',
       icon: 'cloud-upload' as const, 
       route: '/upload' as const, 
-      gradient: ['#2E7D32', '#388E3C'] as const,
+      gradient: ['#6A1B9A', '#7B1FA2'] as const,
       iconBg: 'rgba(46, 125, 50, 0.1)',
     },
     { 
@@ -129,7 +129,7 @@ export default function HomeScreen() {
       subtitle: 'Query Status',
       icon: 'history' as const, 
       route: '/history' as const, 
-      gradient: ['#1565C0', '#1976D2'] as const,
+      gradient: ['#6A1B9A', '#7B1FA2'] as const,
       iconBg: 'rgba(21, 101, 192, 0.1)',
     },
     { 
@@ -137,7 +137,7 @@ export default function HomeScreen() {
       subtitle: 'Crop Reports',
       icon: 'agriculture' as const, 
       route: '/crop-reports' as const, 
-      gradient: ['#E65100', '#F57C00'] as const,
+      gradient: ['#6A1B9A', '#7B1FA2'] as const,
       iconBg: 'rgba(230, 81, 0, 0.1)',
     },
     { 
@@ -153,7 +153,7 @@ export default function HomeScreen() {
       subtitle: 'Knowledge',
       icon: 'school' as const, 
       route: '/knowledge' as const, 
-      gradient: ['#C62828', '#D32F2F'] as const,
+      gradient: ['#6A1B9A', '#7B1FA2'] as const,
       iconBg: 'rgba(198, 40, 40, 0.1)',
     },
     { 
@@ -161,7 +161,7 @@ export default function HomeScreen() {
       subtitle: 'Details',
       icon: 'info' as const, 
       route: '/sahaja-details' as const, 
-      gradient: ['#37474F', '#455A64'] as const,
+      gradient: ['#6A1B9A', '#7B1FA2'] as const,
       iconBg: 'rgba(55, 71, 79, 0.1)',
     },
   ], []);
@@ -279,7 +279,7 @@ export default function HomeScreen() {
                 <Text style={[styles.statNumber, { color: '#7B1FA2' }]}>{summary.closed}</Text>
               )}
             </View>
-            <Text style={styles.statLabel}>ಮುಗಿದೆ</Text>
+            <Text style={styles.statLabel}>ಮುಗಿದಿದೆ</Text>
           </View>
         </View>
       </View>
