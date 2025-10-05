@@ -7,6 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QUERIES_BASE } from './config/api';
+import { COLORS, GRADIENTS } from './config/theme';
 
 // Professional home screen with better colors and full mobile layout
 export default function HomeScreen() {
@@ -115,8 +116,8 @@ export default function HomeScreen() {
   }, [currentTime]);
 
   // Two-color system: primary green and neutral slate
-  const primaryGradient = ['#2F6E3A', '#3B7D46'] as const;
-  const neutralGradient = ['#3F4B53', '#4A5A63'] as const;
+  const primaryGradient = GRADIENTS.primary;
+  const neutralGradient = GRADIENTS.secondary;
 
   // Professional menu items with two-color palette
   const menuItems = useMemo(() => [

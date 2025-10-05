@@ -8,6 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FARMERS_BASE, getApiBaseUrl } from './config/api';
+import { COLORS } from './config/theme';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isTablet = screenWidth > 768;
@@ -451,7 +452,7 @@ export default function ProfileScreen() {
         </View>
 
         <Card style={styles.card}>
-          <Card.Title title="Personal Information" titleStyle={{ color: '#1F4D25', fontWeight: '800' }} />
+          <Card.Title title="Personal Information" titleStyle={{ color: COLORS.textHeading, fontWeight: '800' }} />
           <Card.Content>
             {renderField('Phone Number', editedProfile.phoneNumber, false)}
             {renderField('Date of Birth', editedProfile.dateOfBirth, false)}
@@ -469,7 +470,7 @@ export default function ProfileScreen() {
         </Card>
 
         <Card style={styles.card}>
-          <Card.Title title="Account Information" titleStyle={{ color: '#1F4D25', fontWeight: '800' }} />
+          <Card.Title title="Account Information" titleStyle={{ color: COLORS.textHeading, fontWeight: '800' }} />
           <Card.Content>
             {renderField('Registration Date', profile.registrationDate)}
             {renderField('Status', profile.isActive ? 'Active' : 'Inactive')}
@@ -480,7 +481,7 @@ export default function ProfileScreen() {
           mode="contained"
           icon="logout"
           onPress={handleLogout}
-          style={[styles.logoutButton, { backgroundColor: '#2F6E3A' }]}
+          style={[styles.logoutButton, { backgroundColor: COLORS.primary }]}
           labelStyle={{ fontWeight: '800' }}
           textColor="#fff"
         >
