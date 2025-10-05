@@ -18,8 +18,8 @@ export default function HomeScreen() {
     padding: isSmallScreen ? 8 : isTablet ? 16 : 12,
     titleSize: isSmallScreen ? 14 : isTablet ? 18 : 16,
     heroHeight: Math.min(height * 0.22, isTablet ? 160 : 140),
-    menuIconSize: isSmallScreen ? 18 : isTablet ? 24 : 22,
-    statIconSize: isSmallScreen ? 22 : isTablet ? 30 : 26,
+    menuIconSize: isSmallScreen ? 16 : isTablet ? 22 : 20,
+    statIconSize: isSmallScreen ? 20 : isTablet ? 28 : 24,
     cardSpacing: isSmallScreen ? 6 : isTablet ? 12 : 8,
   }), [isSmallScreen, isTablet, height]);
 
@@ -293,7 +293,7 @@ export default function HomeScreen() {
               style={[
                 styles.menuCard,
                 { 
-                  width: '47.5%',
+                  width: '46.5%',
                   marginBottom: responsiveStyles.cardSpacing,
                 }
               ]}
@@ -514,11 +514,11 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     elevation: 4,
   },
   menuCardContent: {
-    paddingVertical: 14,
+    paddingVertical: 12,
     paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 78,
+    minHeight: 72,
   },
   menuIconContainer: {
     width: 50,
