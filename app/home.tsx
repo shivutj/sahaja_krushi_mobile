@@ -19,6 +19,7 @@ export default function HomeScreen() {
     titleSize: isSmallScreen ? 14 : isTablet ? 18 : 16,
     heroHeight: Math.min(height * 0.11, isTablet ? 96 : 88),
     menuIconSize: isSmallScreen ? 10 : isTablet ? 15 : 13,
+    menuCircleSize: isSmallScreen ? 44 : isTablet ? 56 : 50,
     statIconSize: isSmallScreen ? 16 : isTablet ? 22 : 18,
     cardSpacing: isSmallScreen ? 4 : isTablet ? 6 : 4,
   }), [isSmallScreen, isTablet, height]);
@@ -279,7 +280,9 @@ export default function HomeScreen() {
                 end={{x: 1, y: 1}}
                 style={styles.menuCardContent}
               >
-                <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="white" />
+                <View style={[styles.menuIconCircle, { width: responsiveStyles.menuCircleSize, height: responsiveStyles.menuCircleSize, borderRadius: responsiveStyles.menuCircleSize / 2 }]}> 
+                  <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="white" />
+                </View>
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
               </LinearGradient>
@@ -476,7 +479,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     justifyContent: 'space-between',
   },
   menuCard: {
-    borderRadius: 12,
+    borderRadius: 20,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -492,7 +495,15 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     paddingHorizontal: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
+    borderRadius: 20,
+  },
+  menuIconCircle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.35)',
+    marginBottom: 8,
   },
   menuTitle: { 
     color: 'white', 
