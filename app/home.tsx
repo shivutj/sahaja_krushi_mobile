@@ -509,7 +509,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.08)',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F5F5F5',
   },
   menuCardContentPlain: {
     paddingVertical: 14,
