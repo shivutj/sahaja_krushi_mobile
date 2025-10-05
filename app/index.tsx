@@ -404,7 +404,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   },
   content: {
     flex: 1,
-    paddingHorizontal: width * 0.05,
+    paddingHorizontal: Math.max(12, width * 0.04),
     paddingVertical: height * 0.02,
     justifyContent: 'space-between',
   },
@@ -460,6 +460,8 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     backgroundColor: 'white',
     marginBottom: height * 0.01,
     overflow: 'hidden',
+    width: '100%',
+    alignSelf: 'center',
   },
   cardContent: {
     paddingVertical: height * 0.03,
@@ -509,6 +511,7 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     backgroundColor: '#fff',
     fontSize: isSmallScreen ? 14 : 16,
     color: '#000',
+    width: '100%',
   },
   errorContainer: {
     flexDirection: 'row',
