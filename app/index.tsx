@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, Animated, TouchableOpacity, useWindowDimensions, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, Animated, TouchableOpacity, useWindowDimensions, ActivityIndicator, Keyboard } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { Text, TextInput, Button, Card, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -138,6 +138,7 @@ export default function LoginScreen() {
       
       const payload = res?.data?.data ?? res?.data ?? { contactNumber: phone };
       await AsyncStorage.setItem('farmerSession', JSON.stringify(payload));
+      Keyboard.dismiss();
       router.replace('/home');
     } catch (e: any) {
       if (e.name === 'AbortError') {

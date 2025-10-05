@@ -496,7 +496,6 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
 
   // Professional Menu Section - Full mobile layout
   menuSection: {
-    flex: 1,
     paddingHorizontal: responsiveStyles.padding,
     paddingVertical: 12,
   },
