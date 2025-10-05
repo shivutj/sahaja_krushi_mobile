@@ -46,7 +46,7 @@ export default function CreateCropReportSimpleScreen() {
       try {
         const farmerUrl = `${FARMERS_BASE}/farmer-id/${encodeURIComponent(session.farmerId)}`;
         console.log('Fetching farmer from:', farmerUrl);
-        const farmerResponse = await fetch(farmerUrl);
+        const farmerResponse = await fetch(farmerUrl, { headers: { Accept: 'application/json' } });
         console.log('Farmer response status:', farmerResponse.status);
         if (!farmerResponse.ok) throw new Error(String(farmerResponse.status));
         const farmerData = await farmerResponse.json();
@@ -61,7 +61,7 @@ export default function CreateCropReportSimpleScreen() {
 
       // Step 5: Create crop report
       const payload = {
-        farmerId: farmerId,
+        farmerId: farmerId ?? undefined,
         farmerExternalId: session.farmerId,
         cropName: cropName.trim(),
         cropType: null,

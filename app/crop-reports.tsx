@@ -69,19 +69,25 @@ export default function CropReportsScreen() {
         return;
       }
 
-      // Get the farmer's database ID by fetching farmer details
-      const farmerResponse = await fetch(`${FARMERS_BASE}/farmer-id/${encodeURIComponent(farmerIdString)}`);
-      const farmerData = await farmerResponse.json();
-      
-      if (!farmerData.success) {
-        setError('Failed to get farmer details');
-        setCropReports([]);
-        return;
-      }
-      
-      const farmerId = farmerData.data.id; // Get the database ID
+      // Try DB id route first; if unauthorized or fails, fall back to external id route
+      let farmerId: number | null = null;
+      try {
+        const farmerResponse = await fetch(`${FARMERS_BASE}/farmer-id/${encodeURIComponent(farmerIdString)}`, { headers: { Accept: 'application/json' } });
+        if (farmerResponse.ok) {
+          const farmerData = await farmerResponse.json();
+          if (farmerData?.success && farmerData?.data?.id) {
+            farmerId = farmerData.data.id as number;
+          }
+        }
+      } catch {}
 
-      const resp = await fetch(`${CROP_REPORTS_BASE}/farmer/${farmerId}`);
+      let resp: Response;
+      if (farmerId != null) {
+        resp = await fetch(`${CROP_REPORTS_BASE}/farmer/${farmerId}`);
+      } else {
+        // Fallback endpoint expected on server: by external farmer id
+        resp = await fetch(`${CROP_REPORTS_BASE}/farmer-external/${encodeURIComponent(farmerIdString)}`);
+      }
       const json = await resp.json();
       const reports = Array.isArray(json?.data) ? json.data : [];
       setCropReports(reports);

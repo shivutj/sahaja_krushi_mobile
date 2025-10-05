@@ -65,7 +65,7 @@ export default function CreateCropReportScreen() {
       let farmerId: number | null = null;
       try {
         const farmerUrl = `${FARMERS_BASE}/farmer-id/${encodeURIComponent(session.farmerId)}`;
-        const farmerResponse = await fetch(farmerUrl);
+        const farmerResponse = await fetch(farmerUrl, { headers: { Accept: 'application/json' } });
         if (!farmerResponse.ok) throw new Error(String(farmerResponse.status));
         const farmerData = await farmerResponse.json();
         if (farmerData?.success && farmerData?.data?.id) {
