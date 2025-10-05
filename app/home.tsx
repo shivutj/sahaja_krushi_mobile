@@ -114,55 +114,59 @@ export default function HomeScreen() {
     });
   }, [currentTime]);
 
-  // Professional menu items with muted colors
+  // Two-color system: primary green and neutral slate
+  const primaryGradient = ['#2F6E3A', '#3B7D46'] as const;
+  const neutralGradient = ['#3F4B53', '#4A5A63'] as const;
+
+  // Professional menu items with two-color palette
   const menuItems = useMemo(() => [
     { 
       title: 'ಕೃಷಿ ಪ್ರಶ್ನೆ', 
       subtitle: 'Upload Query',
       icon: 'cloud-upload' as const, 
       route: '/upload' as const, 
-      gradient: ['#2E7D32', '#388E3C'] as const,
-      iconBg: 'rgba(46, 125, 50, 0.1)',
+      gradient: primaryGradient,
+      iconBg: 'rgba(47, 110, 58, 0.12)',
     },
     { 
       title: 'ಪ್ರಶ್ನೆಗಳು', 
       subtitle: 'Query Status',
       icon: 'history' as const, 
       route: '/history' as const, 
-      gradient: ['#1565C0', '#1976D2'] as const,
-      iconBg: 'rgba(21, 101, 192, 0.1)',
+      gradient: neutralGradient,
+      iconBg: 'rgba(63, 75, 83, 0.12)',
     },
     { 
       title: 'ಬೆಳೆ ವರದಿಗಳು', 
       subtitle: 'Crop Reports',
       icon: 'agriculture' as const, 
       route: '/crop-reports' as const, 
-      gradient: ['#E65100', '#F57C00'] as const,
-      iconBg: 'rgba(230, 81, 0, 0.1)',
+      gradient: primaryGradient,
+      iconBg: 'rgba(47, 110, 58, 0.12)',
     },
     { 
       title: 'ಸುದ್ದಿಗಳು', 
       subtitle: 'News',
       icon: 'article' as const, 
       route: '/news' as const, 
-      gradient: ['#6A1B9A', '#7B1FA2'] as const,
-      iconBg: 'rgba(106, 27, 154, 0.1)',
+      gradient: neutralGradient,
+      iconBg: 'rgba(63, 75, 83, 0.12)',
     },
     { 
       title: 'ಜ್ಞಾನ', 
       subtitle: 'Knowledge',
       icon: 'school' as const, 
       route: '/knowledge' as const, 
-      gradient: ['#C62828', '#D32F2F'] as const,
-      iconBg: 'rgba(198, 40, 40, 0.1)',
+      gradient: primaryGradient,
+      iconBg: 'rgba(47, 110, 58, 0.12)',
     },
     { 
       title: 'ವಿವರಗಳು', 
       subtitle: 'Details',
       icon: 'info' as const, 
       route: '/sahaja-details' as const, 
-      gradient: ['#37474F', '#455A64'] as const,
-      iconBg: 'rgba(55, 71, 79, 0.1)',
+      gradient: neutralGradient,
+      iconBg: 'rgba(63, 75, 83, 0.12)',
     },
   ], []);
 
@@ -179,7 +183,7 @@ export default function HomeScreen() {
       
       {/* Professional Header */}
       <LinearGradient 
-        colors={['#0D5302', '#1B5E20', '#2E7D32']} 
+        colors={['#1F4D25', '#245A2A', '#2E6D37']} 
         start={{x: 0, y: 0}} 
         end={{x: 1, y: 1}}
         style={styles.header}
@@ -208,7 +212,7 @@ export default function HomeScreen() {
       {/* Professional Hero Section */}
       <View style={[styles.heroSection, { height: responsiveStyles.heroHeight }]}>
         <LinearGradient 
-          colors={['#0D5302', '#1B5E20', '#2E7D32']} 
+          colors={['#1F4D25', '#245A2A', '#2E6D37']} 
           style={styles.heroGradient}
           start={{x: 0, y: 0}} 
           end={{x: 1, y: 1}}

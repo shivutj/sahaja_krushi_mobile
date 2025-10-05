@@ -451,7 +451,7 @@ export default function ProfileScreen() {
         </View>
 
         <Card style={styles.card}>
-          <Card.Title title="Personal Information" />
+          <Card.Title title="Personal Information" titleStyle={{ color: '#1F4D25', fontWeight: '800' }} />
           <Card.Content>
             {renderField('Phone Number', editedProfile.phoneNumber, false)}
             {renderField('Date of Birth', editedProfile.dateOfBirth, false)}
@@ -469,14 +469,21 @@ export default function ProfileScreen() {
         </Card>
 
         <Card style={styles.card}>
-          <Card.Title title="Account Information" />
+          <Card.Title title="Account Information" titleStyle={{ color: '#1F4D25', fontWeight: '800' }} />
           <Card.Content>
             {renderField('Registration Date', profile.registrationDate)}
             {renderField('Status', profile.isActive ? 'Active' : 'Inactive')}
           </Card.Content>
         </Card>
 
-        <Button mode="outlined" icon="logout" onPress={handleLogout} style={styles.logoutButton}>
+        <Button
+          mode="contained"
+          icon="logout"
+          onPress={handleLogout}
+          style={[styles.logoutButton, { backgroundColor: '#2F6E3A' }]}
+          labelStyle={{ fontWeight: '800' }}
+          textColor="#fff"
+        >
           Logout / ಲಾಗ್ ಔಟ್
         </Button>
       </ScrollView>
