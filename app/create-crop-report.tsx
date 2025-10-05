@@ -63,7 +63,10 @@ export default function CreateCropReportScreen() {
 
       // Step 4: Get farmer database ID
       const farmerUrl = `${FARMERS_BASE}/farmer-id/${encodeURIComponent(session.farmerId)}`;
-      const farmerResponse = await fetch(farmerUrl);
+      const authHeaders: any = { 'Content-Type': 'application/json' };
+      if (session?.token) authHeaders.Authorization = `Bearer ${session.token}`;
+
+      const farmerResponse = await fetch(farmerUrl, { headers: authHeaders, signal: AbortSignal.timeout(12000) });
       
       if (!farmerResponse.ok) {
         throw new Error(`Failed to fetch farmer details: ${farmerResponse.status}`);
@@ -90,9 +93,7 @@ export default function CreateCropReportScreen() {
 
       const response = await fetch(CROP_REPORTS_BASE, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: authHeaders,
         body: JSON.stringify(payload),
       });
 
@@ -298,6 +299,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#fff',
+    color: '#111',
   },
   // Removed date picker styles
   // Removed crop type styles as field is no longer used
