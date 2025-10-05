@@ -115,9 +115,12 @@ export default function HomeScreen() {
     });
   }, [currentTime]);
 
-  // Two-color system: primary green and neutral slate
-  const primaryGradient = GRADIENTS.primary;
-  const neutralGradient = GRADIENTS.secondary;
+  // Card gradients (slightly vibrant, subtle)
+  const greenGrad = ['#3AAE55', '#2F8F46'] as const;
+  const blueGrad = ['#3B82F6', '#2563EB'] as const;
+  const orangeGrad = ['#FB923C', '#F97316'] as const;
+  const purpleGrad = ['#8B5CF6', '#7C3AED'] as const;
+  const slateGrad = ['#64748B', '#475569'] as const;
 
   // Professional menu items with two-color palette
   const menuItems = useMemo(() => [
@@ -126,48 +129,48 @@ export default function HomeScreen() {
       subtitle: 'Upload Query',
       icon: 'cloud-upload' as const, 
       route: '/upload' as const, 
-      gradient: primaryGradient,
-      iconBg: 'rgba(47, 110, 58, 0.12)',
+      gradient: greenGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
     { 
       title: 'ಪ್ರಶ್ನೆಗಳು', 
       subtitle: 'Query Status',
       icon: 'history' as const, 
       route: '/history' as const, 
-      gradient: neutralGradient,
-      iconBg: 'rgba(63, 75, 83, 0.12)',
+      gradient: blueGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
     { 
       title: 'ಬೆಳೆ ವರದಿಗಳು', 
       subtitle: 'Crop Reports',
       icon: 'agriculture' as const, 
       route: '/crop-reports' as const, 
-      gradient: primaryGradient,
-      iconBg: 'rgba(47, 110, 58, 0.12)',
+      gradient: orangeGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
     { 
       title: 'ಸುದ್ದಿಗಳು', 
       subtitle: 'News',
       icon: 'article' as const, 
       route: '/news' as const, 
-      gradient: neutralGradient,
-      iconBg: 'rgba(63, 75, 83, 0.12)',
+      gradient: purpleGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
     { 
       title: 'ಜ್ಞಾನ', 
       subtitle: 'Knowledge',
       icon: 'school' as const, 
       route: '/knowledge' as const, 
-      gradient: primaryGradient,
-      iconBg: 'rgba(47, 110, 58, 0.12)',
+      gradient: slateGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
     { 
       title: 'ವಿವರಗಳು', 
       subtitle: 'Details',
       icon: 'info' as const, 
       route: '/sahaja-details' as const, 
-      gradient: neutralGradient,
-      iconBg: 'rgba(63, 75, 83, 0.12)',
+      gradient: greenGrad,
+      iconBg: 'rgba(255,255,255,0.15)',
     },
   ], []);
 
@@ -305,13 +308,18 @@ export default function HomeScreen() {
               onPress={() => router.push(item.route)}
               activeOpacity={0.8}
             >
-              <View style={styles.menuCardContentPlain}>
-                <View style={styles.menuIconContainerPlain}>
-                  <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="#111" />
+              <LinearGradient 
+                colors={item.gradient}
+                start={{x: 0, y: 0}} 
+                end={{x: 1, y: 1}}
+                style={styles.menuCardContent}
+              >
+                <View style={styles.menuIconContainerGradient}>
+                  <MaterialIcons name={item.icon} size={responsiveStyles.menuIconSize} color="#fff" />
                 </View>
-                <Text style={styles.menuTitlePlain}>{item.title}</Text>
-                <Text style={styles.menuSubtitlePlain}>{item.subtitle}</Text>
-              </View>
+                <Text style={styles.menuTitle}>{item.title}</Text>
+                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+              </LinearGradient>
             </TouchableOpacity>
           ))}
         </View>
@@ -507,40 +515,37 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
   menuCard: {
     borderRadius: 14,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.08)',
-    backgroundColor: '#F5F5F5',
   },
-  menuCardContentPlain: {
+  menuCardContent: {
     paddingVertical: 14,
     paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 72,
   },
-  menuIconContainerPlain: {
+  menuIconContainerGradient: {
     width: 44,
     height: 44,
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: 'rgba(255,255,255,0.18)',
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.06)'
+    borderColor: 'rgba(255,255,255,0.25)'
   },
-  menuTitlePlain: { 
-    color: '#111111', 
-    fontWeight: '800', 
+  menuTitle: { 
+    color: 'white', 
+    fontWeight: '900', 
     textAlign: 'center',
     marginBottom: 4,
     fontSize: 13,
     letterSpacing: 0.2,
   },
-  menuSubtitlePlain: {
-    color: '#444',
+  menuSubtitle: {
+    color: 'rgba(255,255,255,0.95)',
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: '700',
     textAlign: 'center',
   },
 
