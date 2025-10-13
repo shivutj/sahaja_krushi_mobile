@@ -21,6 +21,10 @@ export function getApiBaseUrl(): string {
 
   // Production URL for deployed backend
   const productionUrl = 'https://sahaja-krushi-backend-h0t1.onrender.com';
+  // Always use production API when running on web to avoid localhost issues
+  if (Platform.OS === 'web') {
+    return productionUrl;
+  }
   
   // Development URLs
   if (__DEV__) {

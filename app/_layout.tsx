@@ -24,7 +24,7 @@ export default function RootLayout() {
         <Stack.Screen 
           name="upload" 
           options={{ 
-            title: 'Upload Crop Report',
+            title: 'Upload Crop Query',
             headerShown: true 
           }} 
         />

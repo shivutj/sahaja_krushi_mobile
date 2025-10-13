@@ -7,9 +7,10 @@ import { router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
-import DateTimePicker, { AndroidEvent } from '@react-native-community/datetimepicker';
+// DateTimePicker removed - using OTP instead
 import { FARMERS_BASE } from './config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import otpService from '../services/otpService';
 
 // Single-page login screen with better gradients and visible text
 export default function LoginScreen() {
@@ -20,15 +21,17 @@ export default function LoginScreen() {
   
   // State management
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [dob, setDob] = useState('');
+  const [otp, setOtp] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [verificationId, setVerificationId] = useState('');
+  const [countdown, setCountdown] = useState(0);
   
   // Error states
   const [phoneError, setPhoneError] = useState('');
-  const [dobError, setDobError] = useState('');
+  const [otpError, setOtpError] = useState('');
   const [loginError, setLoginError] = useState('');
 
   // Optimized animations
@@ -53,65 +56,71 @@ export default function LoginScreen() {
     ]).start();
   }, []);
 
-  // Load remembered credentials
+  // Removed remember me feature
+
+  // Countdown timer for OTP resend
   useEffect(() => {
-    (async () => {
-      try {
-        const pref = await AsyncStorage.getItem('rememberLogin');
-        if (pref) {
-          const data = JSON.parse(pref);
-          if (data?.phone) setPhoneNumber(String(data.phone));
-          if (data?.dob) setDob(String(data.dob));
-          setRememberMe(true);
+    let interval: NodeJS.Timeout;
+    if (countdown > 0) {
+      interval = setInterval(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [countdown]);
+
+  // OTP Functions
+  const sendOTP = useCallback(async () => {
+    setPhoneError('');
+    setOtpError('');
+    setLoginError('');
+
+    // Validate phone number
+    const phone = phoneNumber.trim();
+    if (!phone) {
+      setPhoneError('Phone number is required');
+      return;
+    }
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+      setPhoneError('Enter a valid 10-digit phone number');
+      return;
+    }
+
+    setIsSendingOtp(true);
+    try {
+      const result = await otpService.sendOTP(phone);
+      if (result.success) {
+        setOtpSent(true);
+        setVerificationId(result.verificationId || '');
+        setCountdown(60); // 60 second countdown
+        Alert.alert('Success', 'OTP sent successfully to your phone');
+      } else {
+        if (!result.isBillingError) {
+          setLoginError(result.message);
+          Alert.alert('Error', result.message);
         }
-      } catch {}
-    })();
-  }, []);
-
-  // Memoized functions
-  const normalizeDob = useCallback((value: string) => {
-    const v = value.trim();
-    const m = v.match(/^(\d{2})[\/-](\d{2})[\/-](\d{4})$/);
-    if (m) {
-      return `${m[3]}-${m[2]}-${m[1]}`;
-    }
-    return v;
-  }, []);
-
-  const formatDate = useCallback((d: Date) => {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }, []);
-
-  const onPressOpenPicker = useCallback(() => {
-    setShowDatePicker(true);
-  }, []);
-
-  const onChangeDate = useCallback((event: AndroidEvent | any, date?: Date) => {
-    if (Platform.OS === 'android') {
-      if (event.type === 'set' && date) {
-        setSelectedDate(date);
-        setDob(formatDate(date));
       }
-      setShowDatePicker(false);
-    } else {
-      if (date) {
-        setSelectedDate(date);
-        setDob(formatDate(date));
-      }
+    } catch (error) {
+      console.error('Send OTP error:', error);
+      // For billing errors or generic failures, keep UI quiet
+    } finally {
+      setIsSendingOtp(false);
     }
-  }, [formatDate]);
+  }, [phoneNumber]);
 
-  // Optimized login
+  const resendOTP = useCallback(async () => {
+    if (countdown > 0) return;
+    await sendOTP();
+  }, [sendOTP, countdown]);
+
+  // Verify OTP and Login
   const handleLogin = useCallback(async () => {
     setPhoneError('');
-    setDobError('');
+    setOtpError('');
     setLoginError('');
     
     const phone = phoneNumber.replace(/\D/g, '').slice(0, 10).trim();
-    const dobNormalized = normalizeDob(dob);
+    const otpCode = otp.trim();
 
     let failed = false;
 
@@ -123,11 +132,14 @@ export default function LoginScreen() {
       failed = true;
     }
 
-    if (!dobNormalized) {
-      setDobError('Please enter Date of Birth');
+    if (!otpSent) {
+      setOtpError('Please request OTP first');
       failed = true;
-    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(dobNormalized)) {
-      setDobError('Enter DOB as YYYY-MM-DD or DD/MM/YYYY');
+    } else if (!otpCode) {
+      setOtpError('Please enter OTP');
+      failed = true;
+    } else if (otpCode.length !== 6) {
+      setOtpError('OTP must be 6 digits');
       failed = true;
     }
 
@@ -136,13 +148,23 @@ export default function LoginScreen() {
       return;
     }
 
-    setIsLoggingIn(true);
+    setIsVerifyingOtp(true);
     try {
+      // Verify OTP with Firebase
+      const otpResult = await otpService.verifyOTP(otpCode);
+      if (!otpResult.success) {
+        setOtpError(otpResult.message);
+        Alert.alert('Error', otpResult.message);
+        return;
+      }
+
+      // If OTP is verified, proceed with backend login
+      setIsLoggingIn(true);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const res = await axios.post(`${BASE_URL}/login`, 
-        { contactNumber: phone, dateOfBirth: dobNormalized },
+        { contactNumber: phone, otpVerified: true, firebaseUid: otpResult.user?.uid },
         { 
           signal: controller.signal,
           timeout: 10000,
@@ -154,11 +176,6 @@ export default function LoginScreen() {
       
       const payload = res?.data?.data ?? res?.data ?? { contactNumber: phone };
       await AsyncStorage.setItem('farmerSession', JSON.stringify(payload));
-      if (rememberMe) {
-        await AsyncStorage.setItem('rememberLogin', JSON.stringify({ phone, dob: dobNormalized }));
-      } else {
-        await AsyncStorage.removeItem('rememberLogin');
-      }
       Keyboard.dismiss();
       router.replace('/home');
     } catch (e: any) {
@@ -167,13 +184,14 @@ export default function LoginScreen() {
       } else if (e.code === 'NETWORK_ERROR') {
         setLoginError('Network error. Please check your internet connection.');
       } else {
-        setLoginError('Login failed. Please check your credentials.');
+        setLoginError('Login failed. Please try again.');
       }
       Alert.alert('Error', 'Login failed. Please check your credentials and internet connection.');
     } finally {
       setIsLoggingIn(false);
+      setIsVerifyingOtp(false);
     }
-  }, [phoneNumber, dob, normalizeDob, BASE_URL]);
+  }, [phoneNumber, otp, otpSent, BASE_URL]);
 
   // Memoized responsive styles
   const responsiveStyles = useMemo(() => ({
@@ -305,64 +323,80 @@ export default function LoginScreen() {
                       ) : null}
                     </View>
 
-                    {/* Date of Birth Input with visible text */}
-                    <View style={styles.inputContainer}>
-                      <Text style={styles.inputLabel}>ಜನ್ಮ ದಿನಾಂಕ</Text>
-                      <TextInput
-                        mode="outlined"
-                        value={dob}
-                        onChangeText={v => { setDob(v); setDobError(''); setLoginError(''); }}
-                        style={[styles.input, { height: responsiveStyles.inputHeight }]}
-                        left={<TextInput.Icon icon="calendar" iconColor="#666" onPress={onPressOpenPicker} />}
-                        placeholder="YYYY-MM-DD ಅಥವಾ DD/MM/YYYY"
-                        placeholderTextColor="#999"
-                        outlineColor="rgba(46, 125, 50, 0.3)"
-                        activeOutlineColor="#388E3C"
-                        error={!!dobError}
-                        theme={{ 
-                          colors: { 
-                            text: '#000',
-                            primary: '#388E3C',
-                            outline: 'rgba(46, 125, 50, 0.3)',
-                            background: '#fff',
-                            onSurface: '#000',
-                            onSurfaceVariant: '#666',
-                          } 
-                        }}
-                        keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                        editable={true}
-                      />
-                      {showDatePicker && (
-                        <DateTimePicker
-                          value={selectedDate ?? new Date(1990, 0, 1)}
-                          mode="date"
-                          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                          maximumDate={new Date()}
-                          onChange={onChangeDate}
-                        />
-                      )}
-                      {dobError ? (
-                        <View style={styles.errorContainer}>
-                          <MaterialIcons name="error" size={16} color="#f44336" />
-                          <Text style={styles.errorText}>{dobError}</Text>
-                        </View>
-                      ) : null}
-                    </View>
+                    {/* Send OTP Button */}
+                    {!otpSent && (
+                      <View style={styles.inputContainer}>
+                        <Button
+                          mode="outlined"
+                          onPress={sendOTP}
+                          loading={isSendingOtp}
+                          disabled={isSendingOtp || !phoneNumber.trim()}
+                          style={[styles.sendOtpButton, { height: responsiveStyles.buttonHeight }]}
+                          labelStyle={styles.sendOtpButtonText}
+                          buttonColor="rgba(56, 142, 60, 0.1)"
+                          textColor="#388E3C"
+                        >
+                          {isSendingOtp ? 'ಕಳುಹಿಸುತ್ತಿದೆ...' : 'ಒಟಿಪಿ ಕಳುಹಿಸಿ (Send OTP)'}
+                        </Button>
+                      </View>
+                    )}
 
-                    {/* Remember me */}
-                    <View style={styles.rememberRow}>
-                      <Checkbox
-                        status={rememberMe ? 'checked' : 'unchecked'}
-                        onPress={() => setRememberMe(!rememberMe)}
-                        color="#2E7D32"
-                      />
-                      <Text style={styles.rememberText}>ನನ್ನನ್ನು ನೆನಪಿರಲಿ</Text>
-                    </View>
+                    {/* OTP Input */}
+                    {otpSent && (
+                      <View style={styles.inputContainer}>
+                        <Text style={styles.inputLabel}>ಒಟಿಪಿ (OTP)</Text>
+                        <TextInput
+                          mode="outlined"
+                          value={otp}
+                          onChangeText={v => { setOtp(v.replace(/\D/g, '').slice(0, 6)); setOtpError(''); setLoginError(''); }}
+                          style={[styles.input, { height: responsiveStyles.inputHeight }]}
+                          left={<TextInput.Icon icon="lock" iconColor="#666" />}
+                          placeholder="6 ಅಂಕಿಗಳ ಒಟಿಪಿ ನಮೂದಿಸಿ"
+                          placeholderTextColor="#999"
+                          outlineColor="rgba(46, 125, 50, 0.3)"
+                          activeOutlineColor="#388E3C"
+                          error={!!otpError}
+                          theme={{ 
+                            colors: { 
+                              text: '#000',
+                              primary: '#388E3C',
+                              outline: 'rgba(46, 125, 50, 0.3)',
+                              background: '#fff',
+                              onSurface: '#000',
+                              onSurfaceVariant: '#666',
+                            } 
+                          }}
+                          keyboardType="numeric"
+                          maxLength={6}
+                        />
+                        {otpError ? (
+                          <View style={styles.errorContainer}>
+                            <MaterialIcons name="error" size={16} color="#f44336" />
+                            <Text style={styles.errorText}>{otpError}</Text>
+                          </View>
+                        ) : null}
+                        
+                        {/* Resend OTP */}
+                        <View style={styles.resendContainer}>
+                          {countdown > 0 ? (
+                            <Text style={styles.countdownText}>
+                              ಮರುಕಳುಹಿಸಲು {countdown} ಸೆಕೆಂಡುಗಳು ಕಾಯಿರಿ
+                            </Text>
+                          ) : (
+                            <TouchableOpacity onPress={resendOTP} style={styles.resendButton}>
+                              <Text style={styles.resendText}>ಒಟಿಪಿ ಮರುಕಳುಹಿಸಿ (Resend OTP)</Text>
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      </View>
+                    )}
+
+                    {/* Remember me removed */}
 
                     {/* Login Button */}
                     <TouchableOpacity 
                       onPress={handleLogin} 
-                      disabled={isLoggingIn}
+                      disabled={isLoggingIn || isVerifyingOtp || !otpSent}
                       style={styles.loginButtonContainer}
                       activeOpacity={0.8}
                     >
@@ -382,7 +416,7 @@ export default function LoginScreen() {
                             <MaterialIcons name="login" size={20} color="white" />
                           )}
                           <Text style={styles.buttonText}>
-                            {isLoggingIn ? 'ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ...' : 'ಲಾಗಿನ್'}
+                            {isVerifyingOtp ? 'ಒಟಿಪಿ ಪರಿಶೀಲಿಸುತ್ತಿದೆ...' : isLoggingIn ? 'ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ...' : 'ಒಟಿಪಿ ಪರಿಶೀಲಿಸಿ'}
                           </Text>
                         </View>
                       </LinearGradient>
@@ -398,8 +432,10 @@ export default function LoginScreen() {
                     {/* Help Text */}
                     <View style={styles.helpContainer}>
                       <MaterialIcons name="info" size={14} color="#666" />
-                      <Text style={styles.helpText}>ನಿಮ್ಮ ನೋಂದಾಯಿತ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಮತ್ತು ಜನ್ಮ ದಿನಾಂಕ ನಮೂದಿಸಿ</Text>
+                      <Text style={styles.helpText}>ನಿಮ್ಮ ನೋಂದಾಯಿತ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಗೆ ಒಟಿಪಿ ಕಳುಹಿಸಿ ಮತ್ತು ಪರಿಶೀಲಿಸಿ</Text>
                     </View>
+                    {/* Firebase reCAPTCHA (invisible). Required for web OTP. */}
+                    <View id="recaptcha-container" style={{ height: 0 }} />
                   </View>
                 </Card>
               </Animated.View>
@@ -634,5 +670,32 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     fontSize: isSmallScreen ? 9 : isTablet ? 11 : 10,
     color: 'rgba(255, 255, 255, 0.85)',
     textAlign: 'center',
+  },
+  sendOtpButton: {
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#388E3C',
+  },
+  sendOtpButtonText: {
+    fontSize: isSmallScreen ? 14 : 16,
+    fontWeight: '600',
+  },
+  resendContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  countdownText: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500',
+  },
+  resendButton: {
+    padding: 5,
+  },
+  resendText: {
+    fontSize: 12,
+    color: '#388E3C',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });
