@@ -237,9 +237,11 @@ export default function UploadScreen() {
               onChangeText={setDescription}
               multiline
               numberOfLines={4}
-              style={styles.textInput}
+              style={[styles.textInput, { color: '#111' }]}
               outlineColor="#E5E7EB"
               activeOutlineColor="#3B82F6"
+              selectionColor="#3B82F6"
+              theme={{ colors: { text: '#111', onSurface: '#111', onSurfaceVariant: '#111' } }}
             />
           </View>
 

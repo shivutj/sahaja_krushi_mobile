@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Modal, Dimensions, ScrollView, RefreshControl } from 'react-native';
+import { View, StyleSheet, FlatList, Modal, Dimensions, ScrollView, RefreshControl, Linking } from 'react-native';
 import { Text, Card, Button } from 'react-native-paper';
 import axios from 'axios';
 import { NEWS_BASE } from './config/api';
@@ -9,6 +9,7 @@ interface FileItem {
   title: string;
   description: string;
   fileName: string;
+  documentUrl?: string | null;
 }
 
 type ApiNewsItem = {
@@ -33,6 +34,7 @@ export default function FileListScreen() {
       title: n.title,
       description: n.content,
       fileName: n.documentName || n.documentUrl || 'N/A',
+      documentUrl: n.documentUrl || null,
     }));
 
   const loadNews = async () => {
@@ -86,7 +88,17 @@ export default function FileListScreen() {
         <Button
           mode="contained"
           icon="download"
-          onPress={() => { /* placeholder for download */ }}
+          onPress={async () => {
+            try {
+              // Prefer direct document URL from API, else fall back to uploads path
+              const base = `${require('./config/api').getApiBaseUrl()}/uploads`;
+              const url = item.documentUrl || `${base}/${encodeURIComponent(item.fileName)}`;
+              const supported = await Linking.canOpenURL(url);
+              if (supported) {
+                await Linking.openURL(url);
+              }
+            } catch {}
+          }}
           style={[styles.button, styles.downloadButton]}
           labelStyle={[styles.buttonLabel, styles.downloadButtonLabel]}
         >
