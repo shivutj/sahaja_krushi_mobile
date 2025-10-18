@@ -294,6 +294,8 @@ export default function LoginScreen() {
                       <View style={styles.hintContainer}>
                         <MaterialIcons name="info-outline" size={12} color="#666" />
                         <Text style={styles.hintText}>First 4 letters + Birth year</Text>
+                        <Text style={styles.hintText}> ಮೊದಲ 4 ಅಕ್ಷರಗಳು + ಜನ್ಮ ವರ್ಷ (First 4 letters + Birth year)</Text>
+                       
                       </View>
                     </View>
 
