@@ -7,10 +7,8 @@ import { router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
-// DateTimePicker removed - using OTP instead
 import { FARMERS_BASE } from './config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import otpService from '../services/otpService';
 
 // Single-page login screen with better gradients and visible text
 export default function LoginScreen() {
@@ -21,17 +19,12 @@ export default function LoginScreen() {
   
   // State management
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState('');
+  const [username, setUsername] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [isSendingOtp, setIsSendingOtp] = useState(false);
-  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [verificationId, setVerificationId] = useState('');
-  const [countdown, setCountdown] = useState(0);
   
   // Error states
   const [phoneError, setPhoneError] = useState('');
-  const [otpError, setOtpError] = useState('');
+  const [usernameError, setUsernameError] = useState('');
   const [loginError, setLoginError] = useState('');
 
   // Optimized animations
@@ -56,71 +49,22 @@ export default function LoginScreen() {
     ]).start();
   }, []);
 
-  // Removed remember me feature
-
-  // Countdown timer for OTP resend
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (countdown > 0) {
-      interval = setInterval(() => {
-        setCountdown(countdown - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [countdown]);
-
-  // OTP Functions
-  const sendOTP = useCallback(async () => {
-    setPhoneError('');
-    setOtpError('');
+  // Auto-uppercase username input
+  const handleUsernameChange = useCallback((text: string) => {
+    const upperText = text.toUpperCase();
+    setUsername(upperText);
+    setUsernameError('');
     setLoginError('');
+  }, []);
 
-    // Validate phone number
-    const phone = phoneNumber.trim();
-    if (!phone) {
-      setPhoneError('Phone number is required');
-      return;
-    }
-    if (!/^[6-9]\d{9}$/.test(phone)) {
-      setPhoneError('Enter a valid 10-digit phone number');
-      return;
-    }
-
-    setIsSendingOtp(true);
-    try {
-      const result = await otpService.sendOTP(phone);
-      if (result.success) {
-        setOtpSent(true);
-        setVerificationId(result.verificationId || '');
-        setCountdown(60); // 60 second countdown
-        Alert.alert('Success', 'OTP sent successfully to your phone');
-      } else {
-        if (!result.isBillingError) {
-          setLoginError(result.message);
-          Alert.alert('Error', result.message);
-        }
-      }
-    } catch (error) {
-      console.error('Send OTP error:', error);
-      // For billing errors or generic failures, keep UI quiet
-    } finally {
-      setIsSendingOtp(false);
-    }
-  }, [phoneNumber]);
-
-  const resendOTP = useCallback(async () => {
-    if (countdown > 0) return;
-    await sendOTP();
-  }, [sendOTP, countdown]);
-
-  // Verify OTP and Login
+  // Username and Phone Login
   const handleLogin = useCallback(async () => {
     setPhoneError('');
-    setOtpError('');
+    setUsernameError('');
     setLoginError('');
     
     const phone = phoneNumber.replace(/\D/g, '').slice(0, 10).trim();
-    const otpCode = otp.trim();
+    const user = username.trim();
 
     let failed = false;
 
@@ -132,14 +76,11 @@ export default function LoginScreen() {
       failed = true;
     }
 
-    if (!otpSent) {
-      setOtpError('Please request OTP first');
+    if (!user) {
+      setUsernameError('Please enter Username');
       failed = true;
-    } else if (!otpCode) {
-      setOtpError('Please enter OTP');
-      failed = true;
-    } else if (otpCode.length !== 6) {
-      setOtpError('OTP must be 6 digits');
+    } else if (user.length < 4) {
+      setUsernameError('Username must be at least 4 characters');
       failed = true;
     }
 
@@ -148,23 +89,13 @@ export default function LoginScreen() {
       return;
     }
 
-    setIsVerifyingOtp(true);
+    setIsLoggingIn(true);
     try {
-      // Verify OTP with Firebase
-      const otpResult = await otpService.verifyOTP(otpCode);
-      if (!otpResult.success) {
-        setOtpError(otpResult.message);
-        Alert.alert('Error', otpResult.message);
-        return;
-      }
-
-      // If OTP is verified, proceed with backend login
-      setIsLoggingIn(true);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const res = await axios.post(`${BASE_URL}/login`, 
-        { contactNumber: phone, otpVerified: true, firebaseUid: otpResult.user?.uid },
+        { contactNumber: phone, username: user },
         { 
           signal: controller.signal,
           timeout: 10000,
@@ -183,15 +114,16 @@ export default function LoginScreen() {
         setLoginError('Request timed out. Please check your internet connection.');
       } else if (e.code === 'NETWORK_ERROR') {
         setLoginError('Network error. Please check your internet connection.');
+      } else if (e.response?.status === 401) {
+        setLoginError('Invalid username or phone number. Please check your credentials.');
       } else {
         setLoginError('Login failed. Please try again.');
       }
       Alert.alert('Error', 'Login failed. Please check your credentials and internet connection.');
     } finally {
       setIsLoggingIn(false);
-      setIsVerifyingOtp(false);
     }
-  }, [phoneNumber, otp, otpSent, BASE_URL]);
+  }, [phoneNumber, username, BASE_URL]);
 
   // Memoized responsive styles
   const responsiveStyles = useMemo(() => ({
@@ -323,80 +255,47 @@ export default function LoginScreen() {
                       ) : null}
                     </View>
 
-                    {/* Send OTP Button */}
-                    {!otpSent && (
-                      <View style={styles.inputContainer}>
-                        <Button
-                          mode="outlined"
-                          onPress={sendOTP}
-                          loading={isSendingOtp}
-                          disabled={isSendingOtp || !phoneNumber.trim()}
-                          style={[styles.sendOtpButton, { height: responsiveStyles.buttonHeight }]}
-                          labelStyle={styles.sendOtpButtonText}
-                          buttonColor="rgba(56, 142, 60, 0.1)"
-                          textColor="#388E3C"
-                        >
-                          {isSendingOtp ? 'ಕಳುಹಿಸುತ್ತಿದೆ...' : 'ಒಟಿಪಿ ಕಳುಹಿಸಿ (Send OTP)'}
-                        </Button>
-                      </View>
-                    )}
-
-                    {/* OTP Input */}
-                    {otpSent && (
-                      <View style={styles.inputContainer}>
-                        <Text style={styles.inputLabel}>ಒಟಿಪಿ (OTP)</Text>
-                        <TextInput
-                          mode="outlined"
-                          value={otp}
-                          onChangeText={v => { setOtp(v.replace(/\D/g, '').slice(0, 6)); setOtpError(''); setLoginError(''); }}
-                          style={[styles.input, { height: responsiveStyles.inputHeight }]}
-                          left={<TextInput.Icon icon="lock" iconColor="#666" />}
-                          placeholder="6 ಅಂಕಿಗಳ ಒಟಿಪಿ ನಮೂದಿಸಿ"
-                          placeholderTextColor="#999"
-                          outlineColor="rgba(46, 125, 50, 0.3)"
-                          activeOutlineColor="#388E3C"
-                          error={!!otpError}
-                          theme={{ 
-                            colors: { 
-                              text: '#000',
-                              primary: '#388E3C',
-                              outline: 'rgba(46, 125, 50, 0.3)',
-                              background: '#fff',
-                              onSurface: '#000',
-                              onSurfaceVariant: '#666',
-                            } 
-                          }}
-                          keyboardType="numeric"
-                          maxLength={6}
-                        />
-                        {otpError ? (
-                          <View style={styles.errorContainer}>
-                            <MaterialIcons name="error" size={16} color="#f44336" />
-                            <Text style={styles.errorText}>{otpError}</Text>
-                          </View>
-                        ) : null}
-                        
-                        {/* Resend OTP */}
-                        <View style={styles.resendContainer}>
-                          {countdown > 0 ? (
-                            <Text style={styles.countdownText}>
-                              ಮರುಕಳುಹಿಸಲು {countdown} ಸೆಕೆಂಡುಗಳು ಕಾಯಿರಿ
-                            </Text>
-                          ) : (
-                            <TouchableOpacity onPress={resendOTP} style={styles.resendButton}>
-                              <Text style={styles.resendText}>ಒಟಿಪಿ ಮರುಕಳುಹಿಸಿ (Resend OTP)</Text>
-                            </TouchableOpacity>
-                          )}
+                    {/* Username Input */}
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.inputLabel}>ಬಳಕೆದಾರ ಹೆಸರು (Username)</Text>
+                      <TextInput
+                        mode="outlined"
+                        value={username}
+                        onChangeText={handleUsernameChange}
+                        style={[styles.input, { height: responsiveStyles.inputHeight }]}
+                        left={<TextInput.Icon icon="account" iconColor="#666" />}
+                        placeholder="ಉದಾ: SHIV2002"
+                        placeholderTextColor="#999"
+                        outlineColor="rgba(46, 125, 50, 0.3)"
+                        activeOutlineColor="#388E3C"
+                        error={!!usernameError}
+                        theme={{ 
+                          colors: { 
+                            text: '#000',
+                            primary: '#388E3C',
+                            outline: 'rgba(46, 125, 50, 0.3)',
+                            background: '#fff',
+                            onSurface: '#000',
+                            onSurfaceVariant: '#666',
+                          } 
+                        }}
+                        autoCapitalize="characters"
+                        maxLength={20}
+                      />
+                      {usernameError ? (
+                        <View style={styles.errorContainer}>
+                          <MaterialIcons name="error" size={16} color="#f44336" />
+                          <Text style={styles.errorText}>{usernameError}</Text>
                         </View>
-                      </View>
-                    )}
+                      ) : null}
+                    </View>
 
                     {/* Remember me removed */}
 
                     {/* Login Button */}
                     <TouchableOpacity 
                       onPress={handleLogin} 
-                      disabled={isLoggingIn || isVerifyingOtp || !otpSent}
+                      disabled={isLoggingIn || !phoneNumber.trim() || !username.trim()}
                       style={styles.loginButtonContainer}
                       activeOpacity={0.8}
                     >
@@ -416,7 +315,7 @@ export default function LoginScreen() {
                             <MaterialIcons name="login" size={20} color="white" />
                           )}
                           <Text style={styles.buttonText}>
-                            {isVerifyingOtp ? 'ಒಟಿಪಿ ಪರಿಶೀಲಿಸುತ್ತಿದೆ...' : isLoggingIn ? 'ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ...' : 'ಒಟಿಪಿ ಪರಿಶೀಲಿಸಿ'}
+                            {isLoggingIn ? 'ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ...' : 'ಲಾಗಿನ್ ಮಾಡಿ'}
                           </Text>
                         </View>
                       </LinearGradient>
@@ -432,10 +331,8 @@ export default function LoginScreen() {
                     {/* Help Text */}
                     <View style={styles.helpContainer}>
                       <MaterialIcons name="info" size={14} color="#666" />
-                      <Text style={styles.helpText}>ನಿಮ್ಮ ನೋಂದಾಯಿತ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಗೆ ಒಟಿಪಿ ಕಳುಹಿಸಿ ಮತ್ತು ಪರಿಶೀಲಿಸಿ</Text>
+                      <Text style={styles.helpText}>ನಿಮ್ಮ ನೋಂದಾಯಿತ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಮತ್ತು ಬಳಕೆದಾರ ಹೆಸರನ್ನು ನಮೂದಿಸಿ</Text>
                     </View>
-                    {/* Firebase reCAPTCHA (invisible). Required for web OTP. */}
-                    <View id="recaptcha-container" style={{ height: 0 }} />
                   </View>
                 </Card>
               </Animated.View>
@@ -670,32 +567,5 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     fontSize: isSmallScreen ? 9 : isTablet ? 11 : 10,
     color: 'rgba(255, 255, 255, 0.85)',
     textAlign: 'center',
-  },
-  sendOtpButton: {
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: '#388E3C',
-  },
-  sendOtpButtonText: {
-    fontSize: isSmallScreen ? 14 : 16,
-    fontWeight: '600',
-  },
-  resendContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  countdownText: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: '500',
-  },
-  resendButton: {
-    padding: 5,
-  },
-  resendText: {
-    fontSize: 12,
-    color: '#388E3C',
-    fontWeight: '600',
-    textDecorationLine: 'underline',
   },
 });
