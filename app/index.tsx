@@ -264,7 +264,7 @@ export default function LoginScreen() {
                         onChangeText={handleUsernameChange}
                         style={[styles.input, { height: responsiveStyles.inputHeight }]}
                         left={<TextInput.Icon icon="account" iconColor="#666" />}
-                        placeholder="ಉದಾ: SHIV2002"
+                        placeholder="ಉದಾ: NAME2002"
                         placeholderTextColor="#999"
                         outlineColor="rgba(46, 125, 50, 0.3)"
                         activeOutlineColor="#388E3C"
@@ -292,7 +292,7 @@ export default function LoginScreen() {
                       {/* Username format hint */}
                       <View style={styles.hintContainer}>
                         <MaterialIcons name="info-outline" size={12} color="#666" />
-                        <Text style={styles.hintText}>ಮೊದಲ 4 ಅಕ್ಷರಗಳು + ಜನ್ಮ ವರ್ಷ (ಉದಾ: SHIV2002)</Text>
+                        <Text style={styles.hintText}>ಮೊದಲ 4 ಅಕ್ಷರಗಳು + ಜನ್ಮ ವರ್ಷ (ಉದಾ: NAME2002)</Text>
                       </View>
                     </View>
 
