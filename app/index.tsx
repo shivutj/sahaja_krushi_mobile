@@ -19,12 +19,12 @@ export default function LoginScreen() {
   
   // State management
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   
   // Error states
   const [phoneError, setPhoneError] = useState('');
-  const [usernameError, setUsernameError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState('');
 
   // Optimized animations
@@ -49,22 +49,22 @@ export default function LoginScreen() {
     ]).start();
   }, []);
 
-  // Auto-uppercase username input
-  const handleUsernameChange = useCallback((text: string) => {
+  // Auto-uppercase password input
+  const handlePasswordChange = useCallback((text: string) => {
     const upperText = text.toUpperCase();
-    setUsername(upperText);
-    setUsernameError('');
+    setPassword(upperText);
+    setPasswordError('');
     setLoginError('');
   }, []);
 
-  // Username and Phone Login
+  // Password and Phone Login
   const handleLogin = useCallback(async () => {
     setPhoneError('');
-    setUsernameError('');
+    setPasswordError('');
     setLoginError('');
     
     const phone = phoneNumber.replace(/\D/g, '').slice(0, 10).trim();
-    const user = username.trim();
+    const pass = password.trim();
 
     let failed = false;
 
@@ -76,11 +76,11 @@ export default function LoginScreen() {
       failed = true;
     }
 
-    if (!user) {
-      setUsernameError('Please enter Username');
+    if (!pass) {
+      setPasswordError('Please enter Password');
       failed = true;
-    } else if (user.length < 4) {
-      setUsernameError('Username must be at least 4 characters');
+    } else if (pass.length < 4) {
+      setPasswordError('Password must be at least 4 characters');
       failed = true;
     }
 
@@ -95,7 +95,7 @@ export default function LoginScreen() {
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const res = await axios.post(`${BASE_URL}/login`, 
-        { contactNumber: phone, username: user },
+        { contactNumber: phone, username: pass },
         { 
           signal: controller.signal,
           timeout: 10000,
@@ -115,7 +115,7 @@ export default function LoginScreen() {
       } else if (e.code === 'NETWORK_ERROR') {
         setLoginError('Network error. Please check your internet connection.');
       } else if (e.response?.status === 401) {
-        setLoginError('Invalid username or phone number. Please check your credentials.');
+        setLoginError('Invalid password or phone number. Please check your credentials.');
       } else {
         setLoginError('Login failed. Please try again.');
       }
@@ -123,7 +123,7 @@ export default function LoginScreen() {
     } finally {
       setIsLoggingIn(false);
     }
-  }, [phoneNumber, username, BASE_URL]);
+  }, [phoneNumber, password, BASE_URL]);
 
   // Memoized responsive styles
   const responsiveStyles = useMemo(() => ({
@@ -255,20 +255,20 @@ export default function LoginScreen() {
                       ) : null}
                     </View>
 
-                    {/* Username Input */}
+                    {/* Password Input */}
                     <View style={styles.inputContainer}>
-                      <Text style={styles.inputLabel}>ಬಳಕೆದಾರ ಹೆಸರು (Username)</Text>
+                      <Text style={styles.inputLabel}>ಗುಪ್ತಪದ (Password)</Text>
                       <TextInput
                         mode="outlined"
-                        value={username}
-                        onChangeText={handleUsernameChange}
+                        value={password}
+                        onChangeText={handlePasswordChange}
                         style={[styles.input, { height: responsiveStyles.inputHeight }]}
-                        left={<TextInput.Icon icon="account" iconColor="#666" />}
+                        left={<TextInput.Icon icon="lock" iconColor="#666" />}
                         placeholder="ಉದಾ: NAME2002"
                         placeholderTextColor="#999"
                         outlineColor="rgba(46, 125, 50, 0.3)"
                         activeOutlineColor="#388E3C"
-                        error={!!usernameError}
+                        error={!!passwordError}
                         theme={{ 
                           colors: { 
                             text: '#000',
@@ -281,18 +281,19 @@ export default function LoginScreen() {
                         }}
                         autoCapitalize="characters"
                         maxLength={20}
+                        secureTextEntry={false}
                       />
-                      {usernameError ? (
+                      {passwordError ? (
                         <View style={styles.errorContainer}>
                           <MaterialIcons name="error" size={16} color="#f44336" />
-                          <Text style={styles.errorText}>{usernameError}</Text>
+                          <Text style={styles.errorText}>{passwordError}</Text>
                         </View>
                       ) : null}
                       
-                      {/* Username format hint */}
+                      {/* Password format hint */}
                       <View style={styles.hintContainer}>
                         <MaterialIcons name="info-outline" size={12} color="#666" />
-                        <Text style={styles.hintText}>ಮೊದಲ 4 ಅಕ್ಷರಗಳು + ಜನ್ಮ ವರ್ಷ (ಉದಾ: NAME2002)</Text>
+                        <Text style={styles.hintText}>ಮೊದಲ 4 ಅಕ್ಷರಗಳು + ಜನ್ಮ ವರ್ಷ (First 4 letters + Birth year)</Text>
                       </View>
                     </View>
 
@@ -301,7 +302,7 @@ export default function LoginScreen() {
                     {/* Login Button */}
                     <TouchableOpacity 
                       onPress={handleLogin} 
-                      disabled={isLoggingIn || !phoneNumber.trim() || !username.trim()}
+                      disabled={isLoggingIn || !phoneNumber.trim() || !password.trim()}
                       style={styles.loginButtonContainer}
                       activeOpacity={0.8}
                     >
@@ -337,7 +338,7 @@ export default function LoginScreen() {
                     {/* Help Text */}
                     <View style={styles.helpContainer}>
                       <MaterialIcons name="info" size={14} color="#666" />
-                      <Text style={styles.helpText}>ನಿಮ್ಮ ನೋಂದಾಯಿತ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಮತ್ತು ಬಳಕೆದಾರ ಹೆಸರನ್ನು ನಮೂದಿಸಿ</Text>
+                      <Text style={styles.helpText}>ನಿಮ್ಮ ನೋಂದಾಯಿತ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಮತ್ತು ಗುಪ್ತಪದವನ್ನು ನಮೂದಿಸಿ (Enter your registered mobile number and password)</Text>
                     </View>
                   </View>
                 </Card>
