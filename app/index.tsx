@@ -288,6 +288,12 @@ export default function LoginScreen() {
                           <Text style={styles.errorText}>{usernameError}</Text>
                         </View>
                       ) : null}
+                      
+                      {/* Username format hint */}
+                      <View style={styles.hintContainer}>
+                        <MaterialIcons name="info-outline" size={12} color="#666" />
+                        <Text style={styles.hintText}>ಮೊದಲ 4 ಅಕ್ಷರಗಳು + ಜನ್ಮ ವರ್ಷ (ಉದಾ: SHIV2002)</Text>
+                      </View>
                     </View>
 
                     {/* Remember me removed */}
@@ -567,5 +573,19 @@ const getStyles = (isSmallScreen: boolean, isTablet: boolean, width: number, hei
     fontSize: isSmallScreen ? 9 : isTablet ? 11 : 10,
     color: 'rgba(255, 255, 255, 0.85)',
     textAlign: 'center',
+  },
+  hintContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    marginLeft: 8,
+    gap: 4,
+  },
+  hintText: {
+    color: '#666',
+    fontSize: 11,
+    fontWeight: '500',
+    flex: 1,
+    lineHeight: 14,
   },
 });
