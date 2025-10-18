@@ -185,10 +185,10 @@ export default function LoginScreen() {
                   styles.officialTitle, 
                   { fontSize: responsiveStyles.titleSize }
                 ]}>
-                  ಸಹಜ ಕೃಷಿ
+                  Sahaja Krushi
                 </Text>
                 <Text style={styles.departmentText}>
-                  ಕೃಷಿ ಇಲಾಖೆ
+                  Agriculture Department
                 </Text>
               </Animated.View>
 
@@ -211,13 +211,13 @@ export default function LoginScreen() {
                           <MaterialIcons name="login" size={24} color="white" />
                         </LinearGradient>
                       </View>
-                      <Text style={styles.formTitle}>ರೈತ ಲಾಗಿನ್</Text>
+                      <Text style={styles.formTitle}>Farmer Login</Text>
                       
                     </View>
 
                     {/* Phone Number Input with visible text */}
                     <View style={styles.inputContainer}>
-                      <Text style={styles.inputLabel}>ಫೋನ್ ಸಂಖ್ಯೆ</Text>
+                      <Text style={styles.inputLabel}>Phone Number</Text>
                       <TextInput
                         mode="outlined"
                         value={phoneNumber}
@@ -228,8 +228,8 @@ export default function LoginScreen() {
                           setLoginError('');
                         }}
                         style={[styles.input, { height: responsiveStyles.inputHeight }]}
-                        left={<TextInput.Icon icon="phone" iconColor="#666" />}
-                        placeholder="10 ಅಂಕಿ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ"
+                        left={<TextInput.Icon icon="phone" />}
+                        placeholder="Enter 10-digit mobile number"
                         placeholderTextColor="#999"
                         keyboardType="number-pad"
                         outlineColor="rgba(46, 125, 50, 0.3)"
@@ -257,14 +257,14 @@ export default function LoginScreen() {
 
                     {/* Password Input */}
                     <View style={styles.inputContainer}>
-                      <Text style={styles.inputLabel}>ಗುಪ್ತಪದ (Password)</Text>
+                      <Text style={styles.inputLabel}>Password</Text>
                       <TextInput
                         mode="outlined"
                         value={password}
                         onChangeText={handlePasswordChange}
                         style={[styles.input, { height: responsiveStyles.inputHeight }]}
-                        left={<TextInput.Icon icon="lock" iconColor="#666" />}
-                        placeholder="ಉದಾ: NAME2002"
+                        left={<TextInput.Icon icon="lock" />}
+                        placeholder="e.g: NAME2002"
                         placeholderTextColor="#999"
                         outlineColor="rgba(46, 125, 50, 0.3)"
                         activeOutlineColor="#388E3C"
@@ -293,7 +293,7 @@ export default function LoginScreen() {
                       {/* Password format hint */}
                       <View style={styles.hintContainer}>
                         <MaterialIcons name="info-outline" size={12} color="#666" />
-                        <Text style={styles.hintText}>ಮೊದಲ 4 ಅಕ್ಷರಗಳು + ಜನ್ಮ ವರ್ಷ (First 4 letters + Birth year)</Text>
+                        <Text style={styles.hintText}>First 4 letters + Birth year</Text>
                       </View>
                     </View>
 
@@ -322,7 +322,7 @@ export default function LoginScreen() {
                             <MaterialIcons name="login" size={20} color="white" />
                           )}
                           <Text style={styles.buttonText}>
-                            {isLoggingIn ? 'ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ...' : 'ಲಾಗಿನ್ ಮಾಡಿ'}
+                            {isLoggingIn ? 'Logging in...' : 'Login'}
                           </Text>
                         </View>
                       </LinearGradient>
@@ -338,7 +338,7 @@ export default function LoginScreen() {
                     {/* Help Text */}
                     <View style={styles.helpContainer}>
                       <MaterialIcons name="info" size={14} color="#666" />
-                      <Text style={styles.helpText}>ನಿಮ್ಮ ನೋಂದಾಯಿತ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಮತ್ತು ಗುಪ್ತಪದವನ್ನು ನಮೂದಿಸಿ (Enter your registered mobile number and password)</Text>
+                      <Text style={styles.helpText}>Enter your registered mobile number and password</Text>
                     </View>
                   </View>
                 </Card>
