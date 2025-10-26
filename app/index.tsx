@@ -1,14 +1,14 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, Animated, TouchableOpacity, useWindowDimensions, ActivityIndicator, Keyboard } from 'react-native';
-import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
-import { Text, TextInput, Button, Card, useTheme, Checkbox } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import axios from 'axios';
-import { FARMERS_BASE } from './config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, Animated, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Card, Checkbox, Text, TextInput, useTheme } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { FARMERS_BASE } from './config/api';
 
 // Single-page login screen with better gradients and visible text
 export default function LoginScreen() {
@@ -21,6 +21,8 @@ export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
   // Error states
   const [phoneError, setPhoneError] = useState('');
@@ -32,6 +34,27 @@ export default function LoginScreen() {
   const [slideAnim] = useState(new Animated.Value(20));
 
   const BASE_URL = FARMERS_BASE;
+
+  // Load saved credentials on mount
+  useEffect(() => {
+    const loadSavedCredentials = async () => {
+      try {
+        const savedPhone = await AsyncStorage.getItem('savedPhoneNumber');
+        const savedPassword = await AsyncStorage.getItem('savedPassword');
+        const savedRememberMe = await AsyncStorage.getItem('rememberMe');
+        
+        if (savedPhone && savedPassword && savedRememberMe === 'true') {
+          setPhoneNumber(savedPhone);
+          setPassword(savedPassword);
+          setRememberMe(true);
+        }
+      } catch (error) {
+        console.log('Error loading saved credentials:', error);
+      }
+    };
+    
+    loadSavedCredentials();
+  }, []);
 
   // Optimized animation
   useEffect(() => {
@@ -107,6 +130,19 @@ export default function LoginScreen() {
       
       const payload = res?.data?.data ?? res?.data ?? { contactNumber: phone };
       await AsyncStorage.setItem('farmerSession', JSON.stringify(payload));
+      
+      // Handle remember me functionality
+      if (rememberMe) {
+        await AsyncStorage.setItem('savedPhoneNumber', phone);
+        await AsyncStorage.setItem('savedPassword', pass);
+        await AsyncStorage.setItem('rememberMe', 'true');
+      } else {
+        // Clear saved credentials if remember me is unchecked
+        await AsyncStorage.removeItem('savedPhoneNumber');
+        await AsyncStorage.removeItem('savedPassword');
+        await AsyncStorage.removeItem('rememberMe');
+      }
+      
       Keyboard.dismiss();
       router.replace('/home');
     } catch (e: any) {
@@ -123,7 +159,7 @@ export default function LoginScreen() {
     } finally {
       setIsLoggingIn(false);
     }
-  }, [phoneNumber, password, BASE_URL]);
+  }, [phoneNumber, password, rememberMe, BASE_URL]);
 
   // Memoized responsive styles
   const responsiveStyles = useMemo(() => ({
@@ -221,7 +257,7 @@ export default function LoginScreen() {
                       <TextInput
                         mode="outlined"
                         value={phoneNumber}
-                        onChangeText={text => {
+                        onChangeText={(text: string) => {
                           const digitsOnly = text.replace(/\D/g, '').slice(0, 10);
                           setPhoneNumber(digitsOnly);
                           setPhoneError('');
@@ -264,6 +300,12 @@ export default function LoginScreen() {
                         onChangeText={handlePasswordChange}
                         style={[styles.input, { height: responsiveStyles.inputHeight }]}
                         left={<TextInput.Icon icon="lock" />}
+                        right={
+                          <TextInput.Icon 
+                            icon={showPassword ? "eye-off" : "eye"}
+                            onPress={() => setShowPassword(!showPassword)}
+                          />
+                        }
                         placeholder="e.g: NAME2002"
                         placeholderTextColor="#999"
                         outlineColor="rgba(46, 125, 50, 0.3)"
@@ -281,7 +323,7 @@ export default function LoginScreen() {
                         }}
                         autoCapitalize="characters"
                         maxLength={20}
-                        secureTextEntry={false}
+                        secureTextEntry={!showPassword}
                       />
                       {passwordError ? (
                         <View style={styles.errorContainer}>
@@ -298,7 +340,15 @@ export default function LoginScreen() {
                       </View>
                     </View>
 
-                    {/* Remember me removed */}
+                    {/* Remember Me Checkbox */}
+                    <View style={styles.rememberRow}>
+                      <Checkbox
+                        status={rememberMe ? 'checked' : 'unchecked'}
+                        onPress={() => setRememberMe(!rememberMe)}
+                        color="#388E3C"
+                      />
+                      <Text style={styles.rememberText}>Remember me</Text>
+                    </View>
 
                     {/* Login Button */}
                     <TouchableOpacity 
